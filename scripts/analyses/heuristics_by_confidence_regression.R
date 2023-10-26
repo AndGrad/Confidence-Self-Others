@@ -147,23 +147,21 @@ if (file.exists('model_fits/experiment2/heuristics_condition_elections_random.RD
   heuristics_condition_elections_random <-
     brm(
       heuristic_f ~ interaction_f + (1|ID) ,
-      family = categorical (link = 'logit'),
+      family = categorical(link = 'logit'),
       data = data_elections,
       cores = 3,
       chains = 4,
       iter = 3000
     )
   
-  save(list = c("heuristics_condition_elections"), 
-       file = paste(path,"data/heuristics_condition_elections_random.RData", sep = ""))
+  save(list = c("heuristics_condition_elections_random"), 
+       file = "model_fits/experiment2/heuristics_condition_elections_random.RData")
   
-  
-    
-  ## model without random intercept
+    ## model without random intercept
     heuristics_condition_elections <-
     brm(
       heuristic_f ~ interaction_f ,
-      family = categorical (link = 'logit'),
+      family = categorical(link = 'logit'),
       data = data_elections,
       cores = 3,
       chains = 4,
@@ -171,15 +169,9 @@ if (file.exists('model_fits/experiment2/heuristics_condition_elections_random.RD
     )
   
 save(list = c("heuristics_condition_elections"), 
-     file = paste(path,"data/heuristics_condition_elections.RData", sep = ""))
-
-
-
+     file = "model_fits/experiment2//heuristics_condition_elections.RData")
 
 }
-
-load(paste(path,"data/heuristics_condition_elections.RData", sep = ""))
-
 
 parnames(heuristics_condition_elections)
 report(heuristics_condition_elections)
@@ -207,9 +199,6 @@ heuristics_condition_elections_ID <- brm(heuristic_f ~ interaction_f + (1|ID),fa
 
 heuristics_condition_elections_table_ID<-conditional_effects(heuristics_condition_elections_ID,categorical=T)[[1]]
 write.csv(heuristics_condition_elections_table_ID, 'heuristics_condition_elections_table_ID.csv')
-
-
-
 
 
 ##### WHO DRIVES THE RANDOM EFFECTS?
