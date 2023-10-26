@@ -1,11 +1,12 @@
 ###------------------------------------------------------------------------
 ###------------------------------------------------------------------------
 ###                                                                     ---
-###                         REGRESSION ANALYSIS                         ---
+###                     LINEAR REGRESSION ANALYSIS                      ---
 ###                                                                     ---
 ###------------------------------------------------------------------------
 ###------------------------------------------------------------------------
 
+## regression of S by confidence condition
 
 ## SETUP ------------------------------------------------------------------
 
@@ -22,22 +23,19 @@ library(posterior)
 
 ## load full dataset 
 load('data/full_dataset.rda')
-
-
 options(contrasts = rep("contr.treatment", 2))
+
+## EXPERIMENT 1
 
 ## load regression results if already run
 if (file.exists('model_fits/experiment1/model_interaction_beast.RData') == TRUE & file.exists('model_fits/experiment1/interaction_effect_beast.rda') == TRUE) {
   
 load('model_fits/experiment1/model_interaction_beast.RData')
 load('model_fits/experiment1/interaction_effect_beast.rda')
-  
-  
+
 } else {
 
 ## RUN THE MODELS ---------------------------------------------------------
-
-## EXPERIMENT 1
 
 ## select data
 data_beast <- full_dataset %>% 
