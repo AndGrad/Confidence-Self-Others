@@ -1,0 +1,22 @@
+state, population
+Alabama, 4.9
+Arizona, 7.4
+California, 39.4
+Colorado, 5.8
+D.C., 0.7
+Florida, 21.7
+Georgia, 10,7
+Hawaii, 1.4
+Iowa, 3.1
+Kentucky,4.5
+Massachusetts, 6.9
+Nevada, 3.1
+New York, 19.3
+North Carolina, 10.6
+Ohio, 11.7
+Oklahoma, 4
+Pennsylvania, 12.8
+South Carolina, 5.2
+Texas, 29.3
+West Virginia, 1.8
+Wyoming, 0.6

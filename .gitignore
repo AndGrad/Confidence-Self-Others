@@ -1,0 +1,36 @@
+# Version 2022-08-12
+
+# History files
+.Rhistory
+.Rapp.history
+
+# Session Data files
+.RData
+*.RData
+
+# User-specific files
+.Ruserdata
+
+# RStudio files
+.Rproj.user
+.Rproj.user/
+
+# knitr and R markdown default cache directories
+*_cache/
+/cache/
+
+# Temporary files created by R markdown
+*.utf8.md
+*.knit.md
+
+# R Environment Variables
+.Renviron
+
+# R projects 
+*.Rproj
+
+# Directories
+writing/
+payment/
+graveyard/
+

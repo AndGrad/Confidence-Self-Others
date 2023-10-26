@@ -1,0 +1,91 @@
+---
+title: "analyses of stategies"
+output: html_notebook
+editor_options: 
+  chunk_output_type: inline
+---
+
+```{r, echo=FALSE, message=FALSE}
+
+library(dplyr)
+library(ggplot2)
+
+```
+
+
+```{r, echo=FALSE, }
+load("data/heuristics_beast_data.RData")
+load("data/heuristics_elections_data.RData")
+```
+
+# graphs
+
+## election: confidence self
+
+```{r}
+
+heuristics_elections_data %>% 
+  #dplyr::select(heuristic_f, confidence_self) %>% 
+  ggplot( aes(x = heuristic_f)) +
+  geom_bar(aes(y = (..count..)/sum(..count..), fill = confidence_self),
+           position="dodge") +
+  labs(x = "Experiment 2",
+       y = "Frequency") +
+  scale_fill_brewer(type = 'qual', palette  = 2, name = "Confidence\nself") +
+ # ylim(0, 0.4) +
+  theme_classic() + 
+  theme(text = element_text(size = 15))  +
+  theme(legend.title = element_text(size = 12), 
+        legend.text = element_text(size = 12),
+        axis.text.x = element_text(angle = 15, vjust = .8))
+
+heuristics_elections_self
+
+```
+
+
+```{r}
+heuristics_elections_other <-
+  ggplot(data = heuristics_elections_data, aes(x = heuristic_f)) +
+  geom_bar(aes(y = (..count..)/sum(..count..), fill = confidence_other),
+           position="dodge") +
+  labs(x = "Experiment 2",
+       y = "Frequency") +
+  scale_fill_brewer(type = 'qual', palette  = 3, name = "Confidence\nother") +
+  ylim(0, 0.4) +
+  theme_classic() + 
+  theme(text = element_text(size = 15))  +
+    theme(legend.title = element_text(size = 12), 
+        legend.text = element_text(size = 12),
+        axis.text.x = element_text(angle = 15, vjust = .8))
+
+heuristics_elections
+
+heuristics_beast_self <- ggplot(data = heuristics_elections_data, aes(x = heuristic_f)) +
+  geom_bar(aes(y = (..count..)/sum(..count..), fill = confidence_self),
+           position="dodge") +
+  labs(x = "Experiment 2",
+       y = "Frequency") +
+  scale_fill_brewer(type = 'qual', palette  = 2, name = "Confidence\nself") +
+  ylim(0, 0.4) +
+  theme_classic() + 
+  theme(text = element_text(size = 15))  +
+  theme(legend.title = element_text(size = 12), 
+        legend.text = element_text(size = 12),
+        axis.text.x = element_text(angle = 15, vjust = .8))
+
+
+heuristics_beast <- ggplot(data = heuristics_beast_data, aes(x = heuristic_f)) +
+  geom_bar(aes(y = (..count..)/sum(..count..), fill = confidence_other),
+           position="dodge") +
+  labs(x = "Experiment 1",
+       y = "Frequency") +
+  scale_fill_brewer(type = 'qual', palette  = 3, name = "Confidence\nother") +
+  ylim(0,0.4)+
+  theme_classic() +
+  theme(text = element_text(size = 15)) +
+  theme(legend.position = "none",
+        axis.text.x = element_text(angle = 20, vjust = .8)) 
+heuristics_beast
+```
+

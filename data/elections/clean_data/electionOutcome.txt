@@ -1,0 +1,22 @@
+state, percDem
+Alabama, 41 
+Arizona, 50
+California, 64
+Colorado, 56
+D.C., 93
+Florida, 48
+Georgia, 50
+Hawaii, 64
+Iowa, 46
+Kentucky, 37
+Massachusetts, 66
+Nevada, 51
+New York, 61
+North Carolina, 49
+Ohio, 46
+Oklahoma, 34
+Pennsylvania, 50
+South Carolina, 44
+Texas, 47
+West Virginia, 31
+Wyoming, 29
