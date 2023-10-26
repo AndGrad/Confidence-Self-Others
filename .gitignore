@@ -30,7 +30,6 @@
 *.Rproj
 
 # Directories
-writing/
-payment/
-graveyard/
 
+# Files
+README.Rmd
