@@ -15,7 +15,7 @@ General content of each folder:
 
 - scripts: scripts used to analyse the data.
 
-- tables:
+- tables: demographics information, summary of model fitting output.
 
 - model_fits: output files of the regression models. 
 
