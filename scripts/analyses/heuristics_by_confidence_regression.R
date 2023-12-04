@@ -24,8 +24,6 @@ library(posterior)
 load('data/full_dataset.rda')
 options(contrasts = rep("contr.treatment", 2))
 
-
-
 ## load regression results if already run
 if (file.exists('model_fits/experiment1/heuristics_condition_beast_random.RData') == TRUE &
     file.exists('model_fits/experiment1/heuristics_condition_beast.RData') == TRUE) {

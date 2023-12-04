@@ -8,29 +8,7 @@
 
 
 ## load packages
-
-pacman::p_load(
-  "lmerTest",
-  "tidyverse",
-  "tibble",
-  "tidybayes",
-  "readr",
-  "ggstance",
-  "jtools",
-  "kableExtra",
-  "RColorBrewer",
-  "ggdist",
-  "cowplot",
-  "ggsignif",
-  "broom",
-  "memisc",
-  "gghalves",
-  "ggthemes",
-  "scales",
-  "showtext",
-  "grid",
-  "patchwork"
-)
+source("scripts/check_pkgs.R")
 
 ## model fit data
 load('model_fits/posterior_distributions.rda')
@@ -303,7 +281,6 @@ fig2 <- plot_grid(
 
 fig2
 
-
 # ## preview the plots
 # 
 # nflplotR::ggpreview(
@@ -342,11 +319,7 @@ fig2
 dev.off()
 
 # alternative
-ggsave("plots/figure2a.png", fig2, width = 10.2,height = 9, dpi = 120)
+#ggsave("plots/figure2a.png", fig2, width = 10.2,height = 9, dpi = 120)
 
-
-
- #### If NHB, do something else
- 
 
 

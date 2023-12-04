@@ -123,7 +123,7 @@ if (file.exists('model_fits/experiment2/model_interaction_elections.RData') == T
 data_elections <- full_dataset %>% 
   dplyr::filter(experiment == "Experiment 2")
 
-## Regression model - experiment 1
+## Regression model - experiment 2
 model_interaction_elections <-
   brms::brm(
     s ~ confidence_self * confidence_other + expertise + favorability_fact + same_majority_fact + population + (1|ID),
