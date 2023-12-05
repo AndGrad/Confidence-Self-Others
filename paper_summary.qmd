@@ -13,7 +13,7 @@ project:
 ## load packages 
 source("scripts/check_pkgs.R")
 
-##
+## load theme plot
 source(paste0(here(), "/scripts/plots/theme_plot_mkdwn.R"))
 
 ## set knitting directory

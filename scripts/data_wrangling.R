@@ -6,6 +6,8 @@
 ###-------------------------------------------------------------------------
 ###-------------------------------------------------------------------------
 
+## load packages
+source("scripts/check_pkgs.R")
 
 ### This scripts imports the cleaned experimental data and prepares it for the analyses
 # What is calculated here:

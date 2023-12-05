@@ -204,7 +204,7 @@ write.csv(heuristics_condition_elections_table_ID, 'heuristics_condition_electio
 ## explore dataset withouth people that copy all the time
 
 data_beast <- data_beast %>% 
-  filter(ID != c(45 | 71 | 118 | 123 | 171| 175| 165 | 11 | 21| 14 | 48| 111 | 95))
+  dplyr::filter(ID != c(45 | 71 | 118 | 123 | 171| 175| 165 | 11 | 21| 14 | 48| 111 | 95))
 
 heuristics_condition_beast_random_no_copy<- brm(heuristic_f ~ interaction_f + (1| ID),family= categorical (link='logit'), data=final_data_no_med_no_copiers, cores=3, chains=4, iter=2000) 
 plot(conditional_effects(heuristics_condition_beast_random_no_copy,categorical=T))

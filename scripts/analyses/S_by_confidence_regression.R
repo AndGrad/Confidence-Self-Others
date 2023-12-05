@@ -11,15 +11,7 @@
 ## SETUP ------------------------------------------------------------------
 
 ## load packages and load data from data preparation script
-library(tidyverse)
-library(brms)
-library(rstan)
-library(rstanarm)
-library(bayesplot)
-library(tidybayes)
-library(repmod)
-library(sjPlot)
-library(posterior)
+source("scripts/check_pkgs.R")
 
 ## load full dataset 
 load('data/full_dataset.rda')

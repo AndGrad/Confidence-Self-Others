@@ -6,10 +6,12 @@
 ###-------------------------------------------------------------------------
 ###-------------------------------------------------------------------------
 
+## load packages
+source("scripts/check_pkgs.R")
+
 ## load raw data
 load('data/beast/clean_data/heuristics_data_beast.rda')
 load('data/elections/clean_data/heuristics_elections_beast.rda')
-
 
 ## load theme for plots
 source('scripts/plots/theme_plot.R')
