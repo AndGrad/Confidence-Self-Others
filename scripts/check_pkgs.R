@@ -5,37 +5,49 @@
 ## from CRAN and then loaded.
 
 ## First specify the packages of interest
+
+## packages are sorted by domain. if installation is not working
+## smoothly you can uncomment individual packages that may not be necessary for the current analysis 
+
 packages = c(
-  "tidyverse",
-  "tibble",
-  "tidybayes",
-  "lmerTest",
-  "readr",
-  "ggstance",
+  
+  ## utils
+  "here",
   "jtools",
-  "kableExtra",
-  "RColorBrewer",
-  "ggdist",
-  "cowplot",
-  "ggsignif",
+  
+  ## data wrangling
+  "tidyverse",
   "broom",
   "memisc",
+  
+  ## plotting
   "gghalves",
   "ggthemes",
+  "RColorBrewer",
   "scales",
   "showtext",
   "grid",
   "patchwork",
-  "brms",
+  "ggdist",
+  "cowplot",
+  "sjPlot",
+  "ggstance",
+  "ggsignif",
+  
+  ## stats
+  "lme4",
+  "lmerTest",
+  "kableExtra",
+  
+  ## bayesian analyses 
+  "rstan",
   "rstanarm",
+  "brms",
   "bayesplot",
   "repmod",
-  "sjPlot",
   "posterior",
-  "here",
-  "rstan"
+  "tidybayes"
 )
-
 
 
 ## Now load or install&load all
