@@ -1,10 +1,7 @@
-## check and install packages. code by Vikram B. Baliga https://vbaliga.github.io/posts/2019-04-28-verify-that-r-packages-are-installed-and-loaded/
+## check and install packages.
 
-## If a package is installed, it will be loaded. If any 
-## are not, the missing package(s) will be installed 
-## from CRAN and then loaded.
-
-## First specify the packages of interest
+## check if package manager is needed, if yes install
+if (!require("pacman")) install.packages("pacman")
 
 ## packages are sorted by domain. if installation is not working
 ## smoothly you can uncomment individual packages that may not be necessary for the current analysis 
@@ -50,13 +47,4 @@ packages = c(
 )
 
 
-## Now load or install&load all
-package.check <- lapply(
-  packages,
-  FUN = function(x) {
-    if (!require(x, character.only = TRUE)) {
-      install.packages(x, dependencies = TRUE)
-      library(x, character.only = TRUE)
-    }
-  }
-)
+pacman::p_load(char = packages)
