@@ -15,7 +15,12 @@
 # File with user info
 /data/beast/raw_data/batch 1 -core-raw.csv
 /data/beast/raw_data/batch 1 -decisions-raw.csv
-
+/data/elections/raw_data/batch 1 -core-raw.csv
+/data/elections/raw_data/batch 1 -decisions-raw.csv
+/data/elections/raw_data/LIONESS Results - elections_social_info (confidence) 20201030_0623.xlsx
+/data/elections/raw_data/LIONESS Results - elections_social_info (confidence) 20201030_1436.xlsx
+/data/elections/raw_data/LIONESS Results - elections_social_info (confidence) 20201031_0331.xlsx
+/data/elections/raw_data/LIONESS Results - elections_social_info (confidence) 20201103_0244.xlsx
 
 # RStudio files
 .Rproj.user
