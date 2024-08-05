@@ -10,6 +10,12 @@
 
 # User-specific files
 .Ruserdata
+.DS_Store
+
+# File with user info
+/data/beast/raw_data/batch 1 -core-raw.csv
+/data/beast/raw_data/batch 1 -decisions-raw.csv
+
 
 # RStudio files
 .Rproj.user
@@ -28,8 +34,8 @@
 
 # R projects 
 
-
 # Directories
+/data/beast/raw_data/lioness
 
 # Files
 README.Rmd
