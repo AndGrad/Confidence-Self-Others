@@ -69,7 +69,7 @@ beast_data_expanded <-
 ## These are all the variables without any filtering/exclusions.
 ## If you want to conduct your own exploratory analyses, you can start from the dataset saved in the next line of code:
 
-write.csv(beast_data_expanded, "data/beast/clean_data/beast_data_expanded_no_filters.csv")
+write.csv(beast_data_expanded, "data/beast/clean_data/beast_data_expanded_no_filters.csv", row.names = FALSE)
 
 ## From here on, the authors analyses choices will start to determine the results.
 
@@ -118,7 +118,7 @@ heuristics_beast_data <- beast_data_expanded %>%
 
 
 ## write dataset to .csv file
-write.csv(beast_data_expanded, "data/beast/clean_data/beast_data_filtered.csv")
+write.csv(beast_data_expanded, "data/beast/clean_data/beast_data_filtered.csv", row.names = FALSE)
 
 ## write 2x2 dataset to .rda file
 save(file = "data/beast/clean_data/meanS_data_beast.rda", data = beast_data_2by2)
@@ -243,7 +243,7 @@ elections_data_expanded <- elections_data %>%
 ## These are all the variables without any filtering/exclusions.
 ## If you want to conduct your own exploratory analyses, you can start from the dataset saved in the next line of code:
 
-write.csv(elections_data_expanded, "data/elections/clean_data/elections_data_expanded_no_filters.csv")
+write.csv(elections_data_expanded, "data/elections/clean_data/elections_data_expanded_no_filters.csv", row.names = FALSE)
 
 ## From here on, the authors analyses choices will start to determine the results.
 
@@ -276,7 +276,7 @@ heuristics_elections_data <- elections_data_expanded %>%
 
 
 ## write filtered dataset to .csv file
-write.csv(elections_data_expanded, "data/elections/clean_data/elections_data_filtered.csv")
+write.csv(elections_data_expanded, "data/elections/clean_data/elections_data_filtered.csv", row.names = FALSE)
 
 ## write 2x2 dataset to .rda file
 save(file = "data/elections/clean_data/meanS_data_elections.rda", data = elections_data_2by2)
