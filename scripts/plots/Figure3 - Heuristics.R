@@ -63,7 +63,7 @@ heuristic_plot_elections <-
     position = position_stack(vjust = .5),
     size = 8,
   ) +
-  labs(title = 'Experiment 1',
+  labs(title = 'Experiment 2',
        x = "Confidence (Self:Other)",
        y = "Proportion of strategies") +
   scale_fill_manual(

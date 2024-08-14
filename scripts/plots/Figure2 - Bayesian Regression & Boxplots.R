@@ -66,7 +66,7 @@ plot_br <-
     #axis.text.y = element_blank(),
     axis.ticks.y = element_blank(),
     panel.grid.major.x = element_blank(),
-    legend.position = c(.8, .85),
+    legend.position.inside = c(.8, .85),
   ) +
   labs(
     x = 'Estimate',
@@ -260,7 +260,7 @@ boxplot_elections
 
 ## merge plots together in one
 row2 <-
-  plot_grid(
+  cowplot::plot_grid(
     boxplot_beast,
     boxplot_elections,
     align = "H",
@@ -271,7 +271,8 @@ row2 <-
 row2
 
 
-fig2 <- plot_grid(
+fig2 <- 
+  cowplot::plot_grid(
   plot_br,
   row2,
   align = "H",
