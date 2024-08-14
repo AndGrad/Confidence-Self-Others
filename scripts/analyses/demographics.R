@@ -1,5 +1,5 @@
 
-### Report about sample caractheristics
+### Report about sample characteristics
 
 # import libraries
 library(tidyverse)
