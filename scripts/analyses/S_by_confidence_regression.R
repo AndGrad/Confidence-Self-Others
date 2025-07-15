@@ -44,6 +44,141 @@ model_interaction_beast <-
     chains = 4,
     iter = 3000
   )
+####### attempt######
+
+
+data_beast %>% 
+  count(s == 0) %>% 
+  mutate(prop = n / sum(n))
+
+prior <- brms::prior_string("normal(0, 0.1)", class = "b")
+
+
+### zoib option 1
+zoib_formula_int <- bf(
+  s ~ confidence_self * confidence_other  + (1 |ID),  # Formula for mu
+  phi ~ confidence_self * confidence_other+ (1 |ID),  # precision of 0-1 values
+  zoi ~ confidence_self * confidence_other + (1 |ID),  # Formula for zero-one inflation
+  coi ~ confidence_self * confidence_other + (1 |ID)  # Formula for phi (constant)
+)
+
+## zoib option 2
+zoib_formula_f <- bf(
+  s ~ interaction_f  + (1 |ID),  # Formula for mu
+  phi ~ interaction_f + (1 |ID),  # precision of 0-1 values
+  zoi ~ interaction_f + (1 |ID),  # Formula for zero-one inflation
+  coi ~ interaction_f + (1 |ID)  # Formula for phi (constant)
+)
+
+## add priors?
+
+# get_prior(zoib_formula, data = data_beast, family = zero_one_inflated_beta())
+# 
+# model_interaction_beast_zoib_prior <-
+#   brms::brm(
+#     s ~ interaction_f + (1 |ID),
+#     family = zero_one_inflated_beta(),
+#     sample_prior = "only",
+#     data = data_beast,
+#     prior = prior,
+#     cores = 3,
+#     chains = 4,
+#     iter = 3000
+#   )
+
+## fit model 1
+
+zoib_model1 <- brm(
+  formula = zoib_formula_int,
+  data = data_beast,
+  family = zero_one_inflated_beta(),
+ # prior = priors,
+  iter = 4000,
+  warmup = 1000,
+  chains = 4,
+  cores = 4, # Use multiple cores for faster sampling
+  seed = 1234 # for reproducibility
+)
+
+## fit model 2
+
+zoib_model2 <- brm(
+  formula = zoib_formula_f,
+  data = data_beast,
+  family = zero_one_inflated_beta(),
+  # prior = priors,
+  iter = 4000,
+  warmup = 1000,
+  chains = 4,
+  cores = 4, # Use multiple cores for faster sampling
+  seed = 1234 # for reproducibility
+)
+
+## evaluate model
+
+as_draws_df(zoib_model, pars = "b_")[, 1:4] %>%
+  mutate_at(c("b_phi_Intercept"), exp) %>%
+  mutate_at(vars(-"b_phi_Intercept"), plogis) %>%
+  posterior_summary() %>%
+  as.data.frame() %>%
+  rownames_to_column("Parameter") %>%
+  kable(digits = 2)
+
+conditional_effects(zoib_model)
+
+conditions_to_predict <- distinct(data_beast, interaction_f, ID)
+
+# Get the posterior distribution of the predicted mean for each condition
+zoib_model%>%
+  epred_draws(newdata = conditions_to_predict, dpar = "mu") %>%
+  
+  # Summarise the distribution to get a mean and 95% credible interval
+  summarise(
+    predicted_mean = mean(.epred),
+    lower_ci = quantile(.epred, 0.025),
+    upper_ci = quantile(.epred, 0.975)
+  )
+
+### test hypotheses
+
+## model 1 
+
+## with interaction
+h1 <- c("LH - HL" = "plogis(Intercept + confidence_otherHigh) > plogis(Intercept) + confidence_selfHigh")
+hypothesis(zoib_model, h1)
+
+h1 <- c("LH - HL" = "plogis(Intercept + interaction_fLH) > plogis(Intercept)")
+hypothesis(zoib_model2, h)
+
+## model 2
+h2 <- c("LH - HL" = "plogis(Intercept + interaction_fHL) < plogis(Intercept)")
+hypothesis(zoib_model, h2)
+
+## contrasts
+aa <- zoib_model1 %>%
+  avg_comparisons(variables = c("confidence_self", "confidence_other"))%>% 
+  marginaleffects::posterior_draws()
+
+bb <- zoib_model2 %>%
+  avg_comparisons(variables = c("interaction_f"))%>% 
+  marginaleffects::posterior_draws()
+
+bb %>% 
+filter(contrast == "HL - LL")%>%
+  median_hdi(draw)
+bb %>% 
+  filter(contrast == "LH - LL")%>%
+  median_hdi(draw)
+
+ggplot(aa, aes(x = draw, fill = contrast)) +
+  stat_halfeye(.width = c(0.8, 0.95), point_interval = "median_hdi") +
+  theme_clean() +
+  facet_wrap(~term)
+
+pp_check(zoib_model)
+########################
+
+model_interaction_beast <- model_interaction_beast_zoib
 
 ## save modelfit
 save(list = c("model_interaction_beast"), 

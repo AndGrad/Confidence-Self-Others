@@ -286,7 +286,6 @@ save(file = "data/elections/clean_data/heuristics_elections_beast.rda", data = h
 
 
 
-
 ### Merge datasets ------------------------------------------------------------
 
 ## remove redundant columns 
