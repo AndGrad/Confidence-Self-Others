@@ -14,8 +14,7 @@
 source("scripts/check_pkgs.R")
 
 ## load full dataset 
-load('data/full_dataset.rda')
-options(contrasts = rep("contr.treatment", 2))
+load('data/full_dataset.rda') 
 
 ## EXPERIMENT 1
 
@@ -33,156 +32,48 @@ load('model_fits/experiment1/interaction_effect_beast.rda')
 data_beast <- full_dataset %>% 
   dplyr::filter(experiment == "Experiment 1")
 
+## specify priors
+priors <-c(prior("normal(.5, .1)", class = "Intercept"),
+          prior("uniform(-.2, .2)", class = "b", lb = -0.2, ub = 0.2),
+          prior("normal(0, 1)", class = "sd"))
+
+model_interaction_beast_prior <-
+  brms::brm(
+    s ~ confidence_self * confidence_other + (1 | ID),
+    prior = priors,
+    sample_prior = 'only',
+    family = gaussian,
+    data = data_beast,
+    cores = 4,
+    chains = 4,
+    iter = 4000, 
+    seed = 88
+  )
+
+## prior predictive check
+pp_check(model_interaction_beast_prior, ndraws = 100)
+
 ## Regression model - experiment 1
 model_interaction_beast <-
   brms::brm(
-    s ~ confidence_self * confidence_other + (1 |
-                                                ID),
+    s ~ confidence_self * confidence_other + (1 | ID),
+    prior = priors,
+    sample_prior = 'yes',
     family = gaussian,
     data = data_beast,
-    cores = 3,
+    cores = 4,
     chains = 4,
-    iter = 3000
-  )
-####### attempt######
-
-
-data_beast %>% 
-  count(s == 0) %>% 
-  mutate(prop = n / sum(n))
-
-prior <- brms::prior_string("normal(0, 0.1)", class = "b")
-
-
-### zoib option 1
-zoib_formula_int <- bf(
-  s ~ confidence_self * confidence_other  + (1 |ID),  # Formula for mu
-  phi ~ confidence_self * confidence_other+ (1 |ID),  # precision of 0-1 values
-  zoi ~ confidence_self * confidence_other + (1 |ID),  # Formula for zero-one inflation
-  coi ~ confidence_self * confidence_other + (1 |ID)  # Formula for phi (constant)
-)
-
-## zoib option 2
-zoib_formula_f <- bf(
-  s ~ interaction_f  + (1 |ID),  # Formula for mu
-  phi ~ interaction_f + (1 |ID),  # precision of 0-1 values
-  zoi ~ interaction_f + (1 |ID),  # Formula for zero-one inflation
-  coi ~ interaction_f + (1 |ID)  # Formula for phi (constant)
-)
-
-## add priors?
-
-# get_prior(zoib_formula, data = data_beast, family = zero_one_inflated_beta())
-# 
-# model_interaction_beast_zoib_prior <-
-#   brms::brm(
-#     s ~ interaction_f + (1 |ID),
-#     family = zero_one_inflated_beta(),
-#     sample_prior = "only",
-#     data = data_beast,
-#     prior = prior,
-#     cores = 3,
-#     chains = 4,
-#     iter = 3000
-#   )
-
-## fit model 1
-
-zoib_model1 <- brm(
-  formula = zoib_formula_int,
-  data = data_beast,
-  family = zero_one_inflated_beta(),
- # prior = priors,
-  iter = 4000,
-  warmup = 1000,
-  chains = 4,
-  cores = 4, # Use multiple cores for faster sampling
-  seed = 1234 # for reproducibility
-)
-
-## fit model 2
-
-zoib_model2 <- brm(
-  formula = zoib_formula_f,
-  data = data_beast,
-  family = zero_one_inflated_beta(),
-  # prior = priors,
-  iter = 4000,
-  warmup = 1000,
-  chains = 4,
-  cores = 4, # Use multiple cores for faster sampling
-  seed = 1234 # for reproducibility
-)
-
-## evaluate model
-
-as_draws_df(zoib_model, pars = "b_")[, 1:4] %>%
-  mutate_at(c("b_phi_Intercept"), exp) %>%
-  mutate_at(vars(-"b_phi_Intercept"), plogis) %>%
-  posterior_summary() %>%
-  as.data.frame() %>%
-  rownames_to_column("Parameter") %>%
-  kable(digits = 2)
-
-conditional_effects(zoib_model)
-
-conditions_to_predict <- distinct(data_beast, interaction_f, ID)
-
-# Get the posterior distribution of the predicted mean for each condition
-zoib_model%>%
-  epred_draws(newdata = conditions_to_predict, dpar = "mu") %>%
-  
-  # Summarise the distribution to get a mean and 95% credible interval
-  summarise(
-    predicted_mean = mean(.epred),
-    lower_ci = quantile(.epred, 0.025),
-    upper_ci = quantile(.epred, 0.975)
+    iter = 4000, 
+    seed = 88
   )
 
-### test hypotheses
 
-## model 1 
-
-## with interaction
-h1 <- c("LH - HL" = "plogis(Intercept + confidence_otherHigh) > plogis(Intercept) + confidence_selfHigh")
-hypothesis(zoib_model, h1)
-
-h1 <- c("LH - HL" = "plogis(Intercept + interaction_fLH) > plogis(Intercept)")
-hypothesis(zoib_model2, h)
-
-## model 2
-h2 <- c("LH - HL" = "plogis(Intercept + interaction_fHL) < plogis(Intercept)")
-hypothesis(zoib_model, h2)
-
-## contrasts
-aa <- zoib_model1 %>%
-  avg_comparisons(variables = c("confidence_self", "confidence_other"))%>% 
-  marginaleffects::posterior_draws()
-
-bb <- zoib_model2 %>%
-  avg_comparisons(variables = c("interaction_f"))%>% 
-  marginaleffects::posterior_draws()
-
-bb %>% 
-filter(contrast == "HL - LL")%>%
-  median_hdi(draw)
-bb %>% 
-  filter(contrast == "LH - LL")%>%
-  median_hdi(draw)
-
-ggplot(aa, aes(x = draw, fill = contrast)) +
-  stat_halfeye(.width = c(0.8, 0.95), point_interval = "median_hdi") +
-  theme_clean() +
-  facet_wrap(~term)
-
-pp_check(zoib_model)
-########################
-
-model_interaction_beast <- model_interaction_beast_zoib
+pp_check(model_interaction_beast)
 
 ## save modelfit
 save(list = c("model_interaction_beast"), 
      file = "model_fits/experiment1/model_interaction_beast.RData")
+}
 
 ## check that mcmc are mixing
 mcmc_trace(model_interaction_beast, pars = c('b_Intercept',
@@ -226,12 +117,18 @@ posterior_beast <- as.matrix(model_interaction_beast)
 posterior_data_beast <- data.frame(self = posterior_beast[,'b_confidence_selfHigh'],
                                    other = posterior_beast[,'b_confidence_otherHigh'],
                                    interaction = posterior_beast[,'b_confidence_selfHigh:confidence_otherHigh'],
-                                   experiment = factor(rep('Experiment 1', 6000)), labels = '1')
+                                   experiment = factor(rep('Experiment 1', 8000)), labels = '1')
 
 # transform it into long version for ggplot
 posterior_data_beast_long <- gather(posterior_data_beast, key = 'confidence', value = 'estimate', 1:3)
 
-}
+## hypothesis testing
+hypMatbeast<-matrix(0, nrow=0, ncol=3)
+hypMatbeast<-rbind(hypMatbeast,hypothesis(model_interaction_beast, "confidence_selfHigh < 0 ")$hypothesis[1:8])
+hypMatbeast<-rbind(hypMatbeast,hypothesis(model_interaction_beast, "confidence_otherHigh > 0 ")$hypothesis[1:8])
+hypMatbeast<-rbind(hypMatbeast,hypothesis(model_interaction_beast, "confidence_selfHigh:confidence_otherHigh < 0 ")$hypothesis[1:8])
+
+write.csv(hypMatbeast, 'tables/hypotheses_beast.csv')
 
 ## ------------------------------------------------------------------------------------------------
 
@@ -243,12 +140,28 @@ if (file.exists('model_fits/experiment2/model_interaction_elections.RData') == T
   load('model_fits/experiment2/model_interaction_elections.RData')
   load('model_fits/experiment2/interaction_effect_elections.rda')
   
-  
 } else {
 
 ## select data
 data_elections <- full_dataset %>% 
   dplyr::filter(experiment == "Experiment 2")
+
+## sample priors
+model_interaction_election_prior <-
+  brms::brm(
+    s ~ confidence_self * confidence_other + expertise + favorability_fact + same_majority_fact + population + (1|ID),
+    prior = priors,
+    sample_prior = 'only',
+    family = gaussian,
+    data = data_elections,
+    cores = 4,
+    chains = 4,
+    iter = 4000, 
+    seed = 88
+  )
+
+##prior predictive check
+pp_check(model_interaction_election_prior)
 
 ## Regression model - experiment 2
 model_interaction_elections <-
@@ -256,14 +169,21 @@ model_interaction_elections <-
     s ~ confidence_self * confidence_other + expertise + favorability_fact + same_majority_fact + population + (1|ID),
     family = gaussian,
     data = data_elections,
-    cores = 3,
+    prior = priors,
+    sample_prior = "yes",
+    cores = 4,
     chains = 4,
-    iter = 3000
+    iter = 4000,
+    seed = 88
   )
+
+conditional_effects(model_interaction_elections)
 
 ## save modelfit
 save(list = c("model_interaction_elections"), 
      file = "model_fits/experiment2/model_interaction_elections.RData")
+
+}
 
 ## check that mcmc are mixing
 mcmc_trace(model_interaction_elections, pars = c('b_Intercept',
@@ -304,6 +224,20 @@ tab_model(
   file = "tables/elections_regression_analysis.html"
 )
 
+
+hypMatelections<-matrix(0, nrow=0, ncol=7)
+hypMatelections<-rbind(hypMatelections,hypothesis(model_interaction_elections, "confidence_selfHigh < 0 ")$hypothesis[1:8])
+hypMatelections<-rbind(hypMatelections,hypothesis(model_interaction_elections, "confidence_otherHigh > 0 ")$hypothesis[1:8])
+hypMatelections<-rbind(hypMatelections,hypothesis(model_interaction_elections, "confidence_selfHigh:confidence_otherHigh < 0 ")$hypothesis[1:8])
+hypMatelections<-rbind(hypMatelections,hypothesis(model_interaction_elections, "expertise < 0 ")$hypothesis[1:8])
+hypMatelections<-rbind(hypMatelections,hypothesis(model_interaction_elections, "favorability_factsame > 0 ")$hypothesis[1:8])
+hypMatelections<-rbind(hypMatelections,hypothesis(model_interaction_elections, "same_majority_factsame > 0 ")$hypothesis[1:8])
+hypMatelections<-rbind(hypMatelections,hypothesis(model_interaction_elections, "population < 0 ")$hypothesis[1:8])
+
+hypMatelections
+
+write.csv(hypMatelections, 'tables/hypotheses_elections.csv')
+
 ## convert output from model into matrix
 posterior_elections <- as.matrix(model_interaction_elections)
 
@@ -311,8 +245,7 @@ posterior_elections <- as.matrix(model_interaction_elections)
 posterior_data_elections <- data.frame(self = posterior_elections[,'b_confidence_selfHigh'],
                                        other = posterior_elections[,'b_confidence_otherHigh'],
                                        interaction = posterior_elections[,'b_confidence_selfHigh:confidence_otherHigh'],
-                                       experiment = factor(rep('Experiment 2', 6000)), labels = '2')
-
+                                       experiment = factor(rep('Experiment 2', 8000)), labels = '2')
 
 # transform it into long version for ggplot
 posterior_data_elections_long <- gather(posterior_data_elections, key = 'confidence', value = 'estimate', 1:3) 
@@ -331,14 +264,12 @@ posterior_data_combined <- posterior_data_combined %>%
          q95 = quantile(estimate, .95),
          median = median(estimate),
          mean = mean(estimate),
-         x = density(estimate, n = 6000)$x,
-         y = density(estimate, n = 6000)$y,
+         x = density(estimate, n = 8000)$x,
+         y = density(estimate, n = 8000)$y,
          ymax = max(y))
 
 ## save posterior data combined
-save(posterior_data_combined, file = 'model_fits/posterior_distributions.rda')
-
-}
+save(posterior_data_combined, file = 'model_fits/posterior_distributions_2025.rda')
 
 
 

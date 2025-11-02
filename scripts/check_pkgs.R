@@ -48,3 +48,5 @@ packages = c(
 
 
 pacman::p_load(char = packages)
+
+options(contrasts  = c("contr.treatment" , "contr.treatment" ))

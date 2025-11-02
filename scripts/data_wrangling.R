@@ -77,14 +77,13 @@ write.csv(beast_data_expanded, "data/beast/clean_data/beast_data_expanded_no_fil
 # 1) remove treatments where social information use (s) is 0>s>1
 # 2) remove filler trials (confidence of other is medium). this is also done to facilitate comparison with exp 2
 
-beast_data_expanded <- beast_data_expanded %>%
+beast_data_expanded_ <- beast_data_expanded %>%
   dplyr::filter(!is.infinite(s)) %>% 
   dplyr::filter(s <= 1 & s >= 0) %>% 
   dplyr::filter(confidence_other != "Medium") %>% 
   dplyr::filter(confidence_self != "Medium") 
   
 ## structure confidence so it is compatible with elections data 
-
 beast_data_expanded$confidenceTreatment[beast_data_expanded$confidenceTreatment == 3] <- 2
 beast_data_expanded$confidence_self_category[beast_data_expanded$confidence_self_category == 3] <- 2
 
@@ -125,8 +124,6 @@ save(file = "data/beast/clean_data/meanS_data_beast.rda", data = beast_data_2by2
 
 ## write heuristics dataset to .rda file
 save(file = "data/beast/clean_data/heuristics_data_beast.rda", data = heuristics_beast_data)
-
-
 
 
 ### Experiment 2 data ----------------------------------------------------------

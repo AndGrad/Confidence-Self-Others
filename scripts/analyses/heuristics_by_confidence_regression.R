@@ -39,14 +39,29 @@ if (file.exists('model_fits/experiment1/heuristics_condition_beast_random.RData'
 data_beast <- full_dataset %>% 
   dplyr::filter(experiment == "Experiment 1")
 
-## run model with random intercept
+prior <- set_prior("normal(0, 1)",class = "b", dpar = c("muCompromise", "muCopy"))
 
+heuristics_condition_beast_random_prior <-
+  brm(
+    heuristic_f ~ interaction_f + (1|ID),
+    family = categorical (link = 'logit'),
+    prior = prior,
+    sample_prior = 'only',
+    data = data_beast,
+    cores = 4,
+    chains = 4,
+    iter = 3000
+  )
+
+## run model with random intercept
 heuristics_condition_beast_random <-
   brm(
     heuristic_f ~ interaction_f + (1|ID),
     family = categorical (link = 'logit'),
+    prior = prior,
+    sample_prior = 'yes',
     data = data_beast,
-    cores = 3,
+    cores = 4,
     chains = 4,
     iter = 3000
   )
@@ -56,73 +71,57 @@ save(list = c("heuristics_condition_beast_random"),
 
 ## model without random intercept
 
-heuristics_condition_beast <-
-  brm(
-    heuristic_f ~ interaction_f,
-    family = categorical (link = 'logit'),
-    data = data_beast,
-    cores = 3,
-    chains = 4,
-    iter = 3000
-  )
+# heuristics_condition_beast <-
+#   brm(
+#     heuristic_f ~ interaction_f,
+#     family = categorical (link = 'logit'),
+#     data = data_beast,
+#     cores = 4,
+#     chains = 4,
+#     iter = 3000
+#   )
+# 
+# save(list = c("heuristics_condition_beast"), 
+#      file = "model_fits/experiment1/heuristics_condition_beast.RData")
+# 
+ }
 
-save(list = c("heuristics_condition_beast"), 
-     file = "model_fits/experiment1/heuristics_condition_beast.RData")
-
-}
-
-### What do I want to plot here?? re-read the paper
-
-variables(heuristics_condition_beast)
-report(heuristics_condition_beast)
-
-heuristics_condition_beast_random_table <-
-  conditional_effects(heuristics_condition_beast_random, categorical = T)[[1]]
-
-plot(conditional_effects(heuristics_condition_beast, categorical = T))
-write.csv(heuristics_condition_beast_table, 'heuristics_condition_beast_table.csv')
-
-
-
-random_error_model <- load(paste(path,"data/heuristics_condition_beast_random.RData", sep = ""))
-
-prediction <- predict(heuristics_condition_beast_random, newdata = data.frame(interaction_f = treatments, ID = IDs ))
-
-IDs = NULL
-
-for(n in unique(final_data_no_med$ID)){
-  p = rep(n, 4)
-  IDs <- c(IDs, p)
-}
-
-treatment <- c('LL', 'LH', 'HL', 'HH')
-treatments <- rep(treatment, 200)
-
-mean(prediction[,1])
-mean(prediction[,2])
-mean(prediction[,3])
-
-pred <- posterior_predict(heuristics_condition_beast_random)
-
-newdata <- data.frame(interaction_f = c(1,2,3,4))
-predict(fit1, newdata = newdata, re_formula = NA)
-
-data_grid
-
-plot(conditional_effects.brmsfit(heuristics_condition_beast_random,categorical=T))
+## save html table of regression results
+tab_model(
+  heuristics_condition_beast_random)
+  # show.se = TRUE,
+  # pred.labels = c(
+  #   "Compromise (Intercept)",
+  #   "Copy (Intercept)",
+  #   "Compromise (LH)",
+  #   "Compromise (HL)",
+  #   "Compromise (HH)",
+  #   "Copy (LH)",
+  #   "Copy (HL)",
+  #   "Copy (HH)"
+  #   ),
+  file = "tables/heuristics_condition_beast_table.html"
+)
 
 
-hypMat<-matrix(0, nrow=0, ncol=8)
-hypMat<-rbind(hypMat, hypothesis(heuristics_condition_beast, "muCompromise_Intercept >0")$hypothesis[1:8])
-hypMat<-rbind(hypMat, hypothesis(heuristics_condition_beast, "muCopy_Intercept > 0 ")$hypothesis[1:8])
-hypMat<-rbind(hypMat, hypothesis(heuristics_condition_beast, "muCompromise_interaction_fLH > 0 ")$hypothesis[1:8])
-hypMat<-rbind(hypMat, hypothesis(heuristics_condition_beast, "muCompromise_interaction_fHL > 0 ")$hypothesis[1:8])
-hypMat<-rbind(hypMat, hypothesis(heuristics_condition_beast, "muCompromise_interaction_fHH > 0 ")$hypothesis[1:8])
-hypMat<-rbind(hypMat, hypothesis(heuristics_condition_beast, "muCopy_interaction_fLH > 0 ")$hypothesis[1:8])
-hypMat<-rbind(hypMat, hypothesis(heuristics_condition_beast, "muCopy_interaction_fHL > 0 ")$hypothesis[1:8])
-hypMat<-rbind(hypMat, hypothesis(heuristics_condition_beast, "muCopy_interaction_fHH > 0 ")$hypothesis[1:8])
+heuristics_condition_beast_table <- (conditional_effects(heuristics_condition_beast_random, categorical = T))[[1]]
+write.csv(heuristics_condition_beast_table, 'tables/heuristics_condition_beast_table_ce.csv')
 
-write.csv(hypMat, 'hypotheses_beast.csv')
+hypMat_beast<-matrix(0, nrow=0, ncol=8)
+
+hypMat_beast<-rbind(hypMat_beast, hypothesis(heuristics_condition_beast_random, "muCompromise_Intercept> 0 ")$hypothesis[1:8])
+hypMat_beast<-rbind(hypMat_beast, hypothesis(heuristics_condition_beast_random, "muCopy_Intercept < 0 ")$hypothesis[1:8])
+hypMat_beast<-rbind(hypMat_beast, hypothesis(heuristics_condition_beast_random, "muCompromise_interaction_fLH > 0 ")$hypothesis[1:8])
+hypMat_beast<-rbind(hypMat_beast, hypothesis(heuristics_condition_beast_random, "muCompromise_interaction_fHL < 0 ")$hypothesis[1:8])
+hypMat_beast<-rbind(hypMat_beast, hypothesis(heuristics_condition_beast_random, "muCompromise_interaction_fHH > 0 ")$hypothesis[1:8])
+hypMat_beast<-rbind(hypMat_beast, hypothesis(heuristics_condition_beast_random, "muCopy_interaction_fLH > 0 ")$hypothesis[1:8])
+hypMat_beast<-rbind(hypMat_beast, hypothesis(heuristics_condition_beast_random, "muCopy_interaction_fHL > 0 ")$hypothesis[1:8])
+hypMat_beast<-rbind(hypMat_beast, hypothesis(heuristics_condition_beast_random, "muCopy_interaction_fHH > 0 ")$hypothesis[1:8])
+
+hypMat_beast$Experiment = "Experiment 1"
+
+conditional_effects(heuristics_condition_beast_random, categorical = TRUE)
+write.csv(hypMat_beast, 'tables/hypotheses_beast.csv')
 
 
 ## EXPERIMENT 2
@@ -132,7 +131,7 @@ if (file.exists('model_fits/experiment2/heuristics_condition_elections_random.RD
     file.exists('model_fits/experiment2/heuristics_condition_elections.RData') == TRUE) {
   
   load('model_fits/experiment2/heuristics_condition_elections_random.RData')
-  load('model_fits/experiment1/heuristics_condition_elections.RData')
+  load('model_fits/experiment2/heuristics_condition_elections.RData')
   
   
 } else {
@@ -146,69 +145,58 @@ if (file.exists('model_fits/experiment2/heuristics_condition_elections_random.RD
     brm(
       heuristic_f ~ interaction_f + (1|ID) ,
       family = categorical(link = 'logit'),
+      prior = prior,
+      sample_prior = 'yes',
       data = data_elections,
-      cores = 3,
+      cores = 4,
       chains = 4,
       iter = 3000
     )
+  # 
+  #   conditional_effects(heuristics_condition_elections_random, categorical = TRUE)
+  # fixef(heuristics_condition_beast_random)
   
   save(list = c("heuristics_condition_elections_random"), 
        file = "model_fits/experiment2/heuristics_condition_elections_random.RData")
-  
-    ## model without random intercept
-    heuristics_condition_elections <-
-    brm(
-      heuristic_f ~ interaction_f ,
-      family = categorical(link = 'logit'),
-      data = data_elections,
-      cores = 3,
-      chains = 4,
-      iter = 2000
-    )
-  
-save(list = c("heuristics_condition_elections"), 
-     file = "model_fits/experiment2//heuristics_condition_elections.RData")
+    # 
+    # ## model without random intercept
+    # heuristics_condition_elections <-
+    # brm(
+    #   heuristic_f ~ interaction_f ,
+    #   family = categorical(link = 'logit'),
+    #   data = data_elections,
+    #   cores = 3,
+    #   chains = 4,
+    #   iter = 2000
+    # )
+#   
+# save(list = c("heuristics_condition_elections"), 
+#      file = "model_fits/experiment2//heuristics_condition_elections.RData")
 
 }
 
-parnames(heuristics_condition_elections)
-report(heuristics_condition_elections)
+# parnames(heuristics_condition_elections)
+# table_model(heuristics_condition_elections_random)
 
-heuristics_condition_elections_table<-conditional_effects(heuristics_condition_elections,categorical=T)[[1]]
+heuristics_condition_elections_table<-conditional_effects(heuristics_condition_elections_random,categorical=T)[[1]]
 
-write.csv(heuristics_condition_elections_table, 'heuristics_condition_elections_table.csv')
+write.csv(heuristics_condition_elections_table, 'tables/heuristics_condition_elections_table.csv')
 
+hypMat_elections<-matrix(0, nrow=0, ncol=8)
 
-hypMat<-matrix(0, nrow=0, ncol=8)
-hypMat<-rbind(hypMat, hypothesis(heuristics_condition_elections, "muCompromise_Intercept > 0 ")$hypothesis[1:8])
-hypMat<-rbind(hypMat, hypothesis(heuristics_condition_elections, "muCopy_Intercept > 0 ")$hypothesis[1:8])
-hypMat<-rbind(hypMat, hypothesis(heuristics_condition_elections, "muCompromise_interaction_fLH > 0 ")$hypothesis[1:8])
-hypMat<-rbind(hypMat, hypothesis(heuristics_condition_elections, "muCompromise_interaction_fHL > 0 ")$hypothesis[1:8])
-hypMat<-rbind(hypMat, hypothesis(heuristics_condition_elections, "muCompromise_interaction_fHH > 0 ")$hypothesis[1:8])
-hypMat<-rbind(hypMat, hypothesis(heuristics_condition_elections, "muCopy_interaction_fLH > 0 ")$hypothesis[1:8])
-hypMat<-rbind(hypMat, hypothesis(heuristics_condition_elections, "muCopy_interaction_fHL > 0 ")$hypothesis[1:8])
-hypMat<-rbind(hypMat, hypothesis(heuristics_condition_elections, "muCopy_interaction_fHH > 0 ")$hypothesis[1:8])
+hypMat_elections<-rbind(hypMat_elections, hypothesis(heuristics_condition_elections_random, "muCompromise_Intercept > 0 ")$hypothesis[1:8])
+hypMat_elections<-rbind(hypMat_elections, hypothesis(heuristics_condition_elections_random, "muCopy_Intercept < 0 ")$hypothesis[1:8])
+hypMat_elections<-rbind(hypMat_elections, hypothesis(heuristics_condition_elections_random, "muCompromise_interaction_fLH > 0 ")$hypothesis[1:8])
+hypMat_elections<-rbind(hypMat_elections, hypothesis(heuristics_condition_elections_random, "muCompromise_interaction_fHL < 0 ")$hypothesis[1:8])
+hypMat_elections<-rbind(hypMat_elections, hypothesis(heuristics_condition_elections_random, "muCompromise_interaction_fHH > 0 ")$hypothesis[1:8])
+hypMat_elections<-rbind(hypMat_elections, hypothesis(heuristics_condition_elections_random, "muCopy_interaction_fLH > 0 ")$hypothesis[1:8])
+hypMat_elections<-rbind(hypMat_elections, hypothesis(heuristics_condition_elections_random, "muCopy_interaction_fHL < 0 ")$hypothesis[1:8])
+hypMat_elections<-rbind(hypMat_elections, hypothesis(heuristics_condition_elections_random, "muCopy_interaction_fHH > 0 ")$hypothesis[1:8])
 
-write.csv(hypMat, 'hypotheses_elections.csv')
+hypMat_elections$Experiment = "Experiment 2"
 
-#######################
+results2exp <- rbind(hypMat_beast,hypMat_elections) %>% 
+arrange(Hypothesis)
 
-heuristics_condition_elections_ID <- brm(heuristic_f ~ interaction_f + (1|ID),family= categorical (link='logit'), data=data_filter, cores=3, chains=4, iter=2000) 
-
-heuristics_condition_elections_table_ID<-conditional_effects(heuristics_condition_elections_ID,categorical=T)[[1]]
-write.csv(heuristics_condition_elections_table_ID, 'heuristics_condition_elections_table_ID.csv')
-
-
-##### WHO DRIVES THE RANDOM EFFECTS?
-
-## explore dataset withouth people that copy all the time
-
-data_beast <- data_beast %>% 
-  dplyr::filter(ID != c(45 | 71 | 118 | 123 | 171| 175| 165 | 11 | 21| 14 | 48| 111 | 95))
-
-heuristics_condition_beast_random_no_copy<- brm(heuristic_f ~ interaction_f + (1| ID),family= categorical (link='logit'), data=final_data_no_med_no_copiers, cores=3, chains=4, iter=2000) 
-plot(conditional_effects(heuristics_condition_beast_random_no_copy,categorical=T))
-
-heuristics_condition_beast_no_copy<- brm(heuristic_f ~ interaction_f,family= categorical (link='logit'), data=final_data_no_med_no_copiers, cores=3, chains=4, iter=2000) 
-plot(conditional_effects(heuristics_condition_beast_no_copy,categorical=T))
-
+write.csv(hypMat_elections, 'tables/hypotheses_elections.csv')
+write.csv(results2exp, 'tables/hypotheses_both.csv')

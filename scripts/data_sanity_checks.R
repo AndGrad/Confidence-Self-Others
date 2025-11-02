@@ -1,5 +1,4 @@
 ### Here we load data after wrangling, and check that everything is ok!
-# @andrea do this also for elections
 
 ## load packages
 source("scripts/check_pkgs.R")
@@ -49,3 +48,26 @@ elections_data_2by2 %>%
        subtitle = paste("unique players = ", length(unique(elections_data_2by2$ID))),
        x = "n treatments") +
   theme_base(20)
+
+
+### -------- How many trials are filtered due to 0>s>1?
+
+source("scripts/load_experimental_data.R")
+
+beast_filterS<- beast_data %>%
+  dplyr::filter(!is.infinite(s)) %>% 
+  dplyr::filter(s <= 1 & s >= 0) %>% 
+  nrow()
+
+excluded <- nrow(beast_data) - beast_filterS
+excluded/nrow(beast_data) 
+
+
+election_filterS<- elections_data %>%
+  dplyr::filter(!is.infinite(s)) %>% 
+  dplyr::filter(s <= 1 & s >= 0) %>% 
+  nrow()
+
+excluded_elections<- nrow(elections_data) - election_filterS
+excluded_elections/nrow(elections_data) 
+

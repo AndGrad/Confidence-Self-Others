@@ -11,7 +11,7 @@
 source("scripts/check_pkgs.R")
 
 ## model fit data
-load('model_fits/posterior_distributions.rda')
+load('model_fits/posterior_distributions_2025.rda')
 
 ## load raw data
 load('data/beast/clean_data/meanS_data_beast.rda')
@@ -73,7 +73,7 @@ plot_br <-
     y = 'Regression coefficient',
     fill = NULL,
     color = NULL,
-    tag = "a"
+    tag = "c"
   ) +
   guides(fill_ramp = 'none')
 
@@ -134,10 +134,10 @@ boxplot_beast <- beast_data_2by2 %>%
    position = position_nudge(x = .3),
     #geom = "point",
     shape = 24,
-    size = .8,
+    size = 1.2,
     #stroke = 2,
-    color = "black",
-    fill = 'white',
+    color = "red",
+    fill = 'red',
     linewidth = 1.5
   ) +
   # scale_x_discrete(labels=c(expression(paste(S[Low] , O[Low])),
@@ -149,13 +149,12 @@ boxplot_beast <- beast_data_2by2 %>%
     "Low:High",
     "High:Low",
     "High:High")) +
-  
   labs(
     title = 'Experiment 1',
     x = 'Confidence (Self:Other)',
     y =  bquote("Mean adjustment " ~ "(" * bar(S) * ")"),
     
-    tag = "b"
+    tag = "a"
   ) +
   
   scale_fill_manual(values = c("#bd5249",
@@ -202,12 +201,12 @@ boxplot_elections <- elections_data_2by2 %>%
       ymax = upper__,
       fill = interaction_f
     ),
-    position = position_nudge(x = .3),
+   # position = position_nudge(x = .3),
     #geom = "point",
     shape = 24,
     size = .8,
     #stroke = 2,
-    color = "black",
+    color = "red",
     fill = 'white',
     linewidth = 1.5
   ) +
@@ -224,7 +223,7 @@ boxplot_elections <- elections_data_2by2 %>%
     title = 'Experiment 2',
     x = '',
     y = bquote("Mean adjustment " ~ "(" * bar(S) * ")"),
-    tag = "c"
+    tag = "b"
   ) +
   scale_fill_manual(values = c("#bd5249",
     "#b387c0",
@@ -246,8 +245,7 @@ boxplot_elections <- elections_data_2by2 %>%
   
   theme(legend.position = "none"
    ) +
-  
-  geom_hline(yintercept = .5,
+    geom_hline(yintercept = .5,
     lty = 2,
     lwd = 1) +  #line of s = .5 +
   theme(strip.text.y.left = element_text(angle = 0)) +
@@ -259,25 +257,25 @@ boxplot_elections <- elections_data_2by2 %>%
 boxplot_elections
 
 ## merge plots together in one
-row2 <-
+raw_data <-
   cowplot::plot_grid(
     boxplot_beast,
     boxplot_elections,
     align = "H",
     nrow = 1,
-    scale = c(1, 1)
+    rel_widths = c(1, .97)
   )
 
-row2
+raw_data
 
 
 fig2 <- 
   cowplot::plot_grid(
+  raw_data,
   plot_br,
-  row2,
   align = "H",
   nrow = 2,
-  rel_heights = c(.8, 1)
+  rel_heights = c(1, .8)
 )
 
 fig2
@@ -298,26 +296,24 @@ fig2
 # )
 
 ## save pdf, only for later
-# ggsave(
-#   "plots/figure1.pdf",
-#   plot = fig1,
-#  width = 90,
-#  height = 80,
-#   #dpi = 144,
-#  # device = "png",
-#   units = c("mm"),
-#   scale = 1.5,
-#   #limitsize = TRUE,
-#   bg = NULL
-# )
+ggsave(
+  "plots/figure2.png",
+  plot = fig2,
+ width = 10.2,
+ height = 7.8,
+  dpi = 144,
+ # device = "png",
+  units = c("in"),
+  scale = 1.2 ,
+  #limitsize = TRUE,
+  bg = 'white'
+)
 
+# plot.new()
+# png(filename = "plots/figure2.png", width = 10.2, height = 8.8, units = "in",
+#     pointsize = 12, bg = "white", res = 144, family = "",
+#     type = "cairo", antialias = "d")   
 
-png(filename = "plots/figure2.png", width = 10.2, height = 8.8, units = "in",
-    pointsize = 12, bg = "white", res = 144, family = "", restoreConsole = TRUE,
-    type = "cairo", antialias = "d")   
-
-fig2
-dev.off()
 
 # alternative
 #ggsave("plots/figure2a.png", fig2, width = 10.2,height = 9, dpi = 120)
