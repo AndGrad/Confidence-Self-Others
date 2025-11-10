@@ -80,6 +80,9 @@ tab_model(
 
 ## test that s is larger than in low, and that in high is larger than medium
 
+load("model_fits/experiment1/model_interaction_beast_full_treatments.RData")
+
+
 hypothesis(model_interaction_beast_full_treatments, c(
   # Within condition B: add the interaction terms
   "(confidence_self_fMedium + confidence_self_fMedium:confidence_other_fMedium )  < 0",

@@ -75,7 +75,8 @@ plot_br <-
     color = NULL,
     tag = "c"
   ) +
-  guides(fill_ramp = 'none')
+  guides(fill_ramp = 'none') +
+  guides(fill = "none", color='none')
 
 
 plot_br
@@ -137,7 +138,7 @@ boxplot_beast <- beast_data_2by2 %>%
     size = 1.2,
     #stroke = 2,
     color = "red",
-    fill = 'red',
+    fill = 'white',
     linewidth = 1.5
   ) +
   # scale_x_discrete(labels=c(expression(paste(S[Low] , O[Low])),
@@ -201,10 +202,10 @@ boxplot_elections <- elections_data_2by2 %>%
       ymax = upper__,
       fill = interaction_f
     ),
-   # position = position_nudge(x = .3),
+    position = position_nudge(x = .3),
     #geom = "point",
     shape = 24,
-    size = .8,
+    size = 1.2,
     #stroke = 2,
     color = "red",
     fill = 'white',
@@ -248,10 +249,10 @@ boxplot_elections <- elections_data_2by2 %>%
     geom_hline(yintercept = .5,
     lty = 2,
     lwd = 1) +  #line of s = .5 +
-  theme(strip.text.y.left = element_text(angle = 0)) +
+  theme(strip.text.y.left = element_text(angle = 0), 
   #strip.background = element_blank(),
-  # axis.text.y = element_blank(),
-  #axis.ticks.y = element_blank())+
+  axis.text.y = element_blank(),
+  axis.ticks.y = element_blank())+
   coord_flip()
 
 boxplot_elections
@@ -263,7 +264,7 @@ raw_data <-
     boxplot_elections,
     align = "H",
     nrow = 1,
-    rel_widths = c(1, .97)
+    rel_widths = c(1, .78)
   )
 
 raw_data
@@ -299,7 +300,7 @@ fig2
 ggsave(
   "plots/figure2.png",
   plot = fig2,
- width = 10.2,
+ width = 9.2,
  height = 7.8,
   dpi = 144,
  # device = "png",

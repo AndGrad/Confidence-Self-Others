@@ -97,18 +97,29 @@ df_interaction_effect_beast <- as.data.frame(c_eff_interaction$`confidence_self:
 ## save into a r object for plotting later
 save(df_interaction_effect_beast, file = "model_fits/experiment1/interaction_effect_beast.rda")
 
-## save html table of regression results
-tab_model(
-  model_interaction_beast,
-  show.se = TRUE,
-  pred.labels = c(
-    "Intercept",
-    "Confidence Self (High)",
-    "Confidence Other (High)",
-    "Interaction"
-  ),
-  file = "tables/beast_regression_analysis.html"
+beast_regression_analysis_table <- bayestestR::describe_posterior(model_interaction_beast ) %>% 
+  dplyr::select( -c("CI","ROPE_CI", "ROPE_Percentage", "ROPE_high", "ROPE_low"))
+  ))
+
+beast_regression_analysis_table$Parameter <- c(
+  "Intercept",
+  "Confidence Self (High)",
+  "Confidence Other (High)",
+  "Interaction"
 )
+
+## Create table and save into word file 
+ft <- flextable::flextable(beast_regression_analysis_table)
+
+# Format to resemble APA
+ft <- fontsize(ft, size = 7, part = "all")
+ft <- align(ft, align = "center", part = "all")
+
+# Add table to Word document
+doc <- officer::read_docx()
+doc <- flextable::body_add_flextable(doc, ft)
+
+print(doc, target = "tables/beast_regression_analysis_table.docx")
 
 ## transform the data into matrix
 posterior_beast <- as.matrix(model_interaction_beast)
@@ -128,7 +139,15 @@ hypMatbeast<-rbind(hypMatbeast,hypothesis(model_interaction_beast, "confidence_s
 hypMatbeast<-rbind(hypMatbeast,hypothesis(model_interaction_beast, "confidence_otherHigh > 0 ")$hypothesis[1:8])
 hypMatbeast<-rbind(hypMatbeast,hypothesis(model_interaction_beast, "confidence_selfHigh:confidence_otherHigh < 0 ")$hypothesis[1:8])
 
-write.csv(hypMatbeast, 'tables/hypotheses_beast.csv')
+hypMatbeast_clean <- hypMatbeast %>% 
+dplyr::mutate(
+  dplyr::across(
+    where(is.numeric),
+    ~ ifelse(is.infinite(.x), ">100", sprintf("%.2f", round(.x, 2)))
+  )
+)
+
+write.csv(hypMatbeast_clean, 'tables/hypotheses_beast.csv')
 
 ## ------------------------------------------------------------------------------------------------
 
@@ -207,11 +226,15 @@ df_interaction_effect_elections <- as.data.frame(c_eff_interaction_elections$`co
 ## save into a r object for plotting later
 save(df_interaction_effect_elections, file = "model_fits/experiment2/interaction_effect_elections.rda")
 
-## save html table of regression results
-tab_model(
-  model_interaction_elections,
-  show.se = TRUE,
-  pred.labels = c(
+
+elections_regression_analysis_table <- bayestestR::describe_posterior(model_interaction_elections)  %>% 
+  dplyr::select( -c("CI","ROPE_CI", "ROPE_Percentage", "ROPE_high", "ROPE_low")) %>% 
+  dplyr::mutate(across(
+    .cols = setdiff(names(elections_regression_analysis_table)[sapply(elections_regression_analysis_table, is.numeric)], "Rhat"),
+    .fns = ~ round(.x, 2)
+  ))
+
+elections_regression_analysis_table$Parameter <- c(
     "Intercept",
     "Confidence Self (High)",
     "Confidence Other (High)",
@@ -220,9 +243,20 @@ tab_model(
     "Same predicted majority: yes",
     "State population size", 
     "Confidence Self X Confidence Other"
-  ),
-  file = "tables/elections_regression_analysis.html"
 )
+
+## Create table and save into word file 
+ft <- flextable::flextable(elections_regression_analysis_table)
+
+# Format to resemble APA
+ft <- fontsize(ft, size = 7, part = "all")
+ft <- align(ft, align = "center", part = "all")
+
+# Add table to Word document
+doc <- officer::read_docx()
+doc <- flextable::body_add_flextable(doc, ft)
+
+print(doc, target = "tables/elections_regression_analysis.docx")
 
 
 hypMatelections<-matrix(0, nrow=0, ncol=7)
@@ -234,7 +268,13 @@ hypMatelections<-rbind(hypMatelections,hypothesis(model_interaction_elections, "
 hypMatelections<-rbind(hypMatelections,hypothesis(model_interaction_elections, "same_majority_factsame > 0 ")$hypothesis[1:8])
 hypMatelections<-rbind(hypMatelections,hypothesis(model_interaction_elections, "population < 0 ")$hypothesis[1:8])
 
-hypMatelections
+hypMatelections_clean <- hypMatelections %>% 
+  dplyr::mutate(
+    dplyr::across(
+      where(is.numeric),
+      ~ ifelse(is.infinite(.x), ">100", sprintf("%.2f", round(.x, 2)))
+    )
+  )
 
 write.csv(hypMatelections, 'tables/hypotheses_elections.csv')
 

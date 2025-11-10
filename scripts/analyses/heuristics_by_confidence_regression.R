@@ -86,22 +86,22 @@ save(list = c("heuristics_condition_beast_random"),
 # 
  }
 
-## save html table of regression results
-tab_model(
-  heuristics_condition_beast_random)
-  # show.se = TRUE,
-  # pred.labels = c(
-  #   "Compromise (Intercept)",
-  #   "Copy (Intercept)",
-  #   "Compromise (LH)",
-  #   "Compromise (HL)",
-  #   "Compromise (HH)",
-  #   "Copy (LH)",
-  #   "Copy (HL)",
-  #   "Copy (HH)"
-  #   ),
-  file = "tables/heuristics_condition_beast_table.html"
-)
+# ## save html table of regression results
+# tab_model(
+#   heuristics_condition_beast_random)
+#   # show.se = TRUE,
+#   # pred.labels = c(
+#   #   "Compromise (Intercept)",
+#   #   "Copy (Intercept)",
+#   #   "Compromise (LH)",
+#   #   "Compromise (HL)",
+#   #   "Compromise (HH)",
+#   #   "Copy (LH)",
+#   #   "Copy (HL)",
+#   #   "Copy (HH)"
+#   #   ),
+#   file = "tables/heuristics_condition_beast_table.html"
+# )
 
 
 heuristics_condition_beast_table <- (conditional_effects(heuristics_condition_beast_random, categorical = T))[[1]]
@@ -118,10 +118,18 @@ hypMat_beast<-rbind(hypMat_beast, hypothesis(heuristics_condition_beast_random, 
 hypMat_beast<-rbind(hypMat_beast, hypothesis(heuristics_condition_beast_random, "muCopy_interaction_fHL > 0 ")$hypothesis[1:8])
 hypMat_beast<-rbind(hypMat_beast, hypothesis(heuristics_condition_beast_random, "muCopy_interaction_fHH > 0 ")$hypothesis[1:8])
 
-hypMat_beast$Experiment = "Experiment 1"
+hypMat_beast_clean <- hypMat_beast %>% 
+  dplyr::mutate(
+  dplyr::across(
+    where(is.numeric),
+    ~ ifelse(is.infinite(.x), ">100", sprintf("%.2f", round(.x, 2)))
+  )
+)
+
+hypMat_beast_clean$Experiment = "Experiment 1"
 
 conditional_effects(heuristics_condition_beast_random, categorical = TRUE)
-write.csv(hypMat_beast, 'tables/hypotheses_beast.csv')
+write.csv(hypMat_beast_clean, 'tables/hypotheses_beast.csv')
 
 
 ## EXPERIMENT 2
@@ -193,9 +201,17 @@ hypMat_elections<-rbind(hypMat_elections, hypothesis(heuristics_condition_electi
 hypMat_elections<-rbind(hypMat_elections, hypothesis(heuristics_condition_elections_random, "muCopy_interaction_fHL < 0 ")$hypothesis[1:8])
 hypMat_elections<-rbind(hypMat_elections, hypothesis(heuristics_condition_elections_random, "muCopy_interaction_fHH > 0 ")$hypothesis[1:8])
 
-hypMat_elections$Experiment = "Experiment 2"
+hypMat_elections_clean <- hypMat_elections %>% 
+dplyr::mutate(
+  dplyr::across(
+    where(is.numeric),
+    ~ ifelse(is.infinite(.x), ">100", sprintf("%.2f", round(.x, 2)))
+  )
+)
 
-results2exp <- rbind(hypMat_beast,hypMat_elections) %>% 
+hypMat_elections_clean$Experiment = "Experiment 2"
+
+results2exp <- rbind(hypMat_beast_clean,hypMat_elections_clean) %>% 
 arrange(Hypothesis)
 
 write.csv(hypMat_elections, 'tables/hypotheses_elections.csv')
