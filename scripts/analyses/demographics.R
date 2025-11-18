@@ -1,4 +1,3 @@
-
 ### Report about sample characteristics
 
 # import libraries

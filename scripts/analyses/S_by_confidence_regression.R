@@ -258,7 +258,6 @@ doc <- flextable::body_add_flextable(doc, ft)
 
 print(doc, target = "tables/elections_regression_analysis.docx")
 
-
 hypMatelections<-matrix(0, nrow=0, ncol=7)
 hypMatelections<-rbind(hypMatelections,hypothesis(model_interaction_elections, "confidence_selfHigh < 0 ")$hypothesis[1:8])
 hypMatelections<-rbind(hypMatelections,hypothesis(model_interaction_elections, "confidence_otherHigh > 0 ")$hypothesis[1:8])
