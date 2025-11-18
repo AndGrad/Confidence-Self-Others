@@ -6,8 +6,12 @@
 ###------------------------------------------------------------------------
 ###------------------------------------------------------------------------
 
-## EXPERIMENT 1: analysis with the full confidence scale
+## SETUP ------------------------------------------------------------------
 
+## load packages and load data from data preparation script
+source("scripts/check_pkgs.R")
+
+## EXPERIMENT 1: analysis with the full confidence scale
 data_full <- read_csv("data/beast/clean_data/beast_data_expanded_no_filters.csv") %>% 
   dplyr::filter(!is.infinite(s)) %>% 
   dplyr::filter(s <= 1 & s >= 0) %>% 
@@ -33,6 +37,13 @@ data_full <- read_csv("data/beast/clean_data/beast_data_expanded_no_filters.csv"
 
 ### Model 1: Confidence Medium
 
+## load regression results if already run
+if (file.exists(file = "model_fits/experiment1/model_interaction_beast_full_treatments.RData") == TRUE) {
+
+  load('model_fits/experiment1/model_interaction_beast_full_treatments.RData')
+  
+} else{
+
 ## specify priors
 priors <-c(prior("normal(.5, .1)", class = "Intercept"),
            prior("uniform(-.2, .2)", class = "b", lb = -0.2, ub = 0.2),
@@ -41,7 +52,7 @@ priors <-c(prior("normal(.5, .1)", class = "Intercept"),
 model_interaction_beast_full_treatments <-
   brms::brm(
     s ~ confidence_self_f * confidence_other_f + (1 | ID),
-    prior = prior,
+    prior = priors,
     sample_prior = "yes",
     family = gaussian,
     data = data_full,
@@ -55,8 +66,10 @@ model_interaction_beast_full_treatments <-
 save(list = c("model_interaction_beast_full_treatments"), 
      file = "model_fits/experiment1/model_interaction_beast_full_treatments.RData")
 
+}
+
 ## conditional effects
-conditional_effects(model_interaction_beast_full_treatments, 'confidence_self_f:confidence_other_f')
+#conditional_effects(model_interaction_beast_full_treatments, 'confidence_self_f:confidence_other_f')
 
 ## save table
 ## save html table of regression results
@@ -80,8 +93,6 @@ tab_model(
 
 ## test that s is larger than in low, and that in high is larger than medium
 
-load("model_fits/experiment1/model_interaction_beast_full_treatments.RData")
-
 hypothesis(model_interaction_beast_full_treatments, c(
   # Within condition B: add the interaction terms
   "(confidence_self_fMedium + confidence_self_fMedium:confidence_other_fMedium )  < 0",
@@ -95,6 +106,12 @@ data_scaled<-
   ungroup %>% 
   mutate(confidence_self_scaled= scale(confidence),
          confidence_other_scaled = scale(social_confidence))
+
+## load regression results if already run
+if (file.exists('model_fits/experiment1/model_interaction_beast_full_scale.RData') == TRUE) {
+  
+  load('model_fits/experiment1/model_interaction_beast_full_scale.RData')
+} else {
 
 model_interaction_beast_full_scale <-
   brms::brm(
@@ -112,6 +129,8 @@ model_interaction_beast_full_scale <-
 ## save modelfit
 save(list = c("model_interaction_beast_full_scale"), 
      file = "model_fits/experiment1/model_interaction_beast_full_scale.RData")
+
+}
 
 ## save table
 
@@ -139,6 +158,14 @@ load('data/full_dataset.rda')
 data_beast <- full_dataset %>% 
   dplyr::filter(experiment == "Experiment 1")
 
+
+## load regression results if already run
+if (file.exists('model_fits/experiment1/model_interaction_beast_uncertainty.RData') == TRUE) {
+  
+  load('model_fits/experiment1/model_interaction_beast_uncertainty.RData')
+  
+} else {
+
 ## fit pre-registered model (equation 3 in main text)
 model_interaction_beast_uncertainty <-
   brms::brm(
@@ -153,6 +180,12 @@ model_interaction_beast_uncertainty <-
     seed = 88
   )
 
+## save modelfit
+save(list = c("model_interaction_beast_uncertainty"), 
+     file = "model_fits/experiment1/model_interaction_beast_uncertainty.RData")
+
+
+}
 ## save html table of regression results
 tab_model(
   model_interaction_beast_uncertainty,
@@ -186,24 +219,9 @@ zoib_formula_beast <- bf(
   coi ~ confidence_self * confidence_other + (1 |ID)    
 )
 
-## optional: add priors
 
-# prior <- brms::prior_string("normal(0, 0.5)", class = "b") # to be specified depending on assumptions
-# get_prior(zoib_formula, data = data_beast, family = zero_one_inflated_beta())
-# 
-# model_interaction_beast_zoib_prior <-
-#   brms::brm(
-#     s ~ interaction_f + (1 |ID),
-#     family = zero_one_inflated_beta(),
-#     sample_prior = "only",
-#     data = data_beast,
-#     prior = prior,
-#     cores = 3,
-#     chains = 4,
-#     iter = 3000
-#   )
 
-## fit model 1
+## fit model 
 
 zoib_model_beast <- brm(
   formula = zoib_formula_beast,
@@ -220,7 +238,6 @@ zoib_model_beast <- brm(
 ## save modelfit
 save(list = c("zoib_model_beast"), 
      file = "model_fits/experiment1/zoib_model_beast.RData")
-
 
 conditional_effects(zoib_model_beast)
 pp_check(zoib_model_beast)
