@@ -201,15 +201,11 @@ tab_model(
   file = "tables/beast_regression_analysis_uncertainty.html"
 )
 
-conditional_effects(model_interaction_beast_uncertainty)
+#conditional_effects(model_interaction_beast_uncertainty)
 
 ### ZOIB regression ------------------------------------------------------------
 
 ## experiment 1
-
-data_beast %>% 
-  count(s == 0) %>% 
-  mutate(prop = n / sum(n))
 
 ### zoib option 1
 zoib_formula_beast <- bf(
@@ -219,9 +215,15 @@ zoib_formula_beast <- bf(
   coi ~ confidence_self * confidence_other + (1 |ID)    
 )
 
-
-
 ## fit model 
+
+
+## load regression results if already run
+if (file.exists('model_fits/experiment1/zoib_model_beast.RData') == TRUE ) {
+  
+    load('model_fits/experiment1/zoib_model_beast.RData')
+  
+} else {
 
 zoib_model_beast <- brm(
   formula = zoib_formula_beast,
@@ -239,6 +241,8 @@ zoib_model_beast <- brm(
 save(list = c("zoib_model_beast"), 
      file = "model_fits/experiment1/zoib_model_beast.RData")
 
+}
+
 conditional_effects(zoib_model_beast)
 pp_check(zoib_model_beast)
 
@@ -252,6 +256,13 @@ zoib_formula_elections <- bf(
   zoi ~ confidence_self * confidence_other + expertise + favorability_fact + same_majority_fact + population  + (1 |ID),  # Formula for zero-one inflation
   coi ~ confidence_self * confidence_other + expertise + favorability_fact + same_majority_fact + population  + (1 |ID)  # Formula for phi (constant)
 )
+
+## load regression results if already run
+if (file.exists('model_fits/experiment2/zoib_model_elections.RData') == TRUE ) {
+  
+  load('model_fits/experiment1/zoib_model_elections.RData')
+  
+} else {
 
 zoib_model_elections<- brm(
   formula = zoib_formula_elections,
@@ -269,101 +280,8 @@ zoib_model_elections<- brm(
 save(list = c("zoib_model_elections"), 
      file = "model_fits/experiment2/zoib_model_elections.RData")
 
+}
 conditional_effects(zoib_model_elections, ask = FALSE)
 
 
-### Vizualization of correct E1 guesses ------------------------------------------
-
-## How often is e1 == to social info?
-
-beast_all_trials <- read_csv("data/beast/clean_data/beast_data_expanded_no_filters.csv")
-
-beast_all_trials %>% 
-  ggplot(aes(x = norm1, fill = factor))+
-  geom_histogram(binwidth = .02,   aes(fill = (..xmin.. <= 1 & ..xmax.. > 1)),
-                 color = "black",
-                 show.legend = FALSE
-  ) +
-  labs( x = "E1 / Correct Value") +
-  scale_fill_manual(values = c("TRUE" = "red", "FALSE" = "black")) +
-  theme_tidybayes(base_size = 20)
-
-n_perfect_guesses <- beast_all_trials  %>% 
-  filter(e1 == nAnimals) %>% 
-  count() %>% 
-  pull() 
-
-round(n_perfect_guesses/nrow(data_beast) * 100, 2)
-
-## make a vizlualization of the distribution of the excluded rounds
-
-## load the data
-data_excluded_b <- beast_all_trials %>% 
-  mutate(count = n()) %>% 
-  dplyr::filter(s > 1 | s < 0) %>% 
-  dplyr::select(s, count) %>% 
-  mutate(exp = "exp1")
-
-data_excluded_e <- read_csv("data/elections/clean_data/elections_data_expanded_no_filters.csv") %>% 
-  mutate(count = n()) %>% 
-  dplyr::filter(s > 1 | s < 0) %>% 
-  dplyr::select(s, count) %>% 
-  mutate(exp = "exp2")
-
-data_excluded <- bind_rows(data_excluded_b, data_excluded_e)
-
-total_observations <- data_excluded_b$count[1] + data_excluded_e$count[1]
-
-## label for annotation
-annotation_label <- paste0("N = ", nrow(data_excluded),
-                           " (",round(nrow(data_excluded)/(total_observations)*100,2), "% of total observations)")
-
-## make plot
-data_excluded %>% 
-  ggplot(data = .) +
-  geom_histogram(
-    aes(x = s),
-    fill = "#FFDAB9", 
-    color = "black", 
-    binwidth = 0.1
-  ) +
-    annotate(
-      "rect",
-      xmin = -Inf,
-      xmax = 0,
-      ymin = -Inf,
-      ymax = Inf,
-      fill = "lightgrey",
-      alpha = 0.6 
-    ) +
-    annotate(
-      "rect",
-      xmin = 1,
-      xmax = Inf,
-      ymin = -Inf,
-      ymax = Inf,
-      fill = "lightgrey",
-      alpha = 0.6
-    ) +
-  annotate(
-    "text",
-    x = 15,
-    y = 90, 
-    label = annotation_label,
-    hjust = 0, 
-    vjust = 1,
-    size = 4  
-  ) +
-    geom_vline(
-      xintercept = c(0, 1),
-      color = "black",
-      size = 0.8 
-    ) +
-    theme_minimal() +
-    labs(
-      x = "s",
-      y = "Frequency (Count)"
-    ) +
-  theme_tidybayes(base_size = 20)
-  
   
