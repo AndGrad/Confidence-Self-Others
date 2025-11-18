@@ -25,21 +25,7 @@ General content of each folder:
 
 - model_fits: output files of the regression models. 
 
-### I just want to check the code analyses and the plots in the paper.
-
-You should check the file paper_summary.html. it contains all the code
-used to output the content of the main paper, as an .html file. This is
-not where you re-run the code yourself, or thinker with it.
-
-### I want to play with the code for analyses and the plots in the paper.
-
-You should check the file scripts/analyses/paper_summary.qmd. This is a
-R Markdown used to generate the report above, so it has the same
-content, but now you can play around with the data.
-
-### I want to double check the whole analysis pipeline.
-
-You should go into the folder scripts/analyses/
+To check the analysis pipeline, you can go to scripts/analyses/
 
 **Nice plots! how do I make them?**
 

@@ -82,7 +82,6 @@ tab_model(
 
 load("model_fits/experiment1/model_interaction_beast_full_treatments.RData")
 
-
 hypothesis(model_interaction_beast_full_treatments, c(
   # Within condition B: add the interaction terms
   "(confidence_self_fMedium + confidence_self_fMedium:confidence_other_fMedium )  < 0",
@@ -173,7 +172,6 @@ conditional_effects(model_interaction_beast_uncertainty)
 
 ### ZOIB regression ------------------------------------------------------------
 
-
 ## experiment 1
 
 data_beast %>% 
@@ -228,7 +226,6 @@ conditional_effects(zoib_model_beast)
 pp_check(zoib_model_beast)
 
 ## experiment 2
-
 data_elections <- full_dataset %>% 
   dplyr::filter(experiment == "Experiment 2")
 
@@ -256,82 +253,6 @@ save(list = c("zoib_model_elections"),
      file = "model_fits/experiment2/zoib_model_elections.RData")
 
 conditional_effects(zoib_model_elections, ask = FALSE)
-
-report(zoib_model_elections)
-
-## evaluate model
-
-as_draws_df(zoib_model, pars = "b_")[, 1:4] %>%
-  mutate_at(c("b_phi_Intercept"), exp) %>%
-  mutate_at(vars(-"b_phi_Intercept"), plogis) %>%
-  posterior_summary() %>%
-  as.data.frame() %>%
-  rownames_to_column("Parameter") %>%
-  kable(digits = 2)
-
-conditional_effects(zoib_model)
-
-conditions_to_predict <- distinct(data_beast, interaction_f, ID)
-
-# Get the posterior distribution of the predicted mean for each condition
-zoib_model%>%
-  epred_draws(newdata = conditions_to_predict, dpar = "mu") %>%
-  
-  # Summarise the distribution to get a mean and 95% credible interval
-  summarise(
-    predicted_mean = mean(.epred),
-    lower_ci = quantile(.epred, 0.025),
-    upper_ci = quantile(.epred, 0.975)
-  )
-
-### test hypotheses
-
-# model 1 
-
-## with interaction
-h1 <- c("Other - Self" = "(confidence_otherHigh) > (-confidence_selfHigh)")
-hyp <- paste0(parnames(model_interaction_beast_full_scale)[2], " > 0")
-
-hypothesis(model_interaction_beast, h1)
-
-
-h1 <- c("LH - HL" = "plogis(Intercept + interaction_fLH) > plogis(Intercept)")
-hypothesis(zoib_model2, h)
-
-## model 2
-h2 <- c("LH - HL" = "plogis(Intercept + interaction_fHL) < plogis(Intercept)")
-hypothesis(zoib_model, h2)
-
-## contrasts
-
-library(marginaleffects)
-
-aa <- zoib_model_beast %>%
-  avg_comparisons(variables = c("confidence_self", "confidence_other"))%>% 
-  marginaleffects::posterior_draws()
-
-
-
-bb <- zoib_model2 %>%
-  avg_comparisons(variables = c("interaction_f"))%>% 
-  marginaleffects::posterior_draws()
-
-bb %>% 
-  filter(contrast == "HL - LL")%>%
-  median_hdi(draw)
-bb %>% 
-  filter(contrast == "LH - LL")%>%
-  median_hdi(draw)
-
-ggplot(aa, aes(x = draw, fill = contrast)) +
-  stat_halfeye(.width = c(0.8, 0.95), point_interval = "median_hdi") +
-  theme_clean() +
-  facet_wrap(~term)
-
-pp_check(zoib_model)
-########################
-
-model_interaction_beast <- model_interaction_beast_zoib
 
 
 ### Vizualization of correct E1 guesses ------------------------------------------
