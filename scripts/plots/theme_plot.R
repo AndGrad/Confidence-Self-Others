@@ -23,7 +23,8 @@ theme_custom <- function(){
       legend.spacing.y = unit(0, "pt"),
       plot.title = element_text(hjust = 0.5, size = 32),
       panel.grid = element_blank(),
-      panel.grid.major.x = element_line( linetype = 'dashed', linewidth =.05, color="lightgrey" ) 
+      panel.grid.minor = element_blank(),
+      panel.grid.major.x = element_line( linetype = 'dashed', linewidth =.5, color="lightgrey" ) 
     )
   
 }

@@ -49,4 +49,7 @@ packages = c(
 
 pacman::p_load(char = packages)
 
+## this is to circumvent a current issue with gghalves. should be removed in the futures if the packaged is updated to fit with ggplot
+remotes::install_github("teunbrand/gghalves@compat_ggplot2_400")
+
 options(contrasts  = c("contr.treatment" , "contr.treatment" ))

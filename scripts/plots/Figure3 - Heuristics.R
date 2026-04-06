@@ -108,3 +108,11 @@ ggsave(
   height = 5.8,
   dpi = 180
 )
+
+ggsave(
+  'plots/figure3.pdf',
+  width = 16,
+  height = 8,
+  dpi = 300
+)
+  

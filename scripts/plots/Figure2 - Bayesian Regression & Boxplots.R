@@ -73,7 +73,7 @@ plot_br <-
     y = 'Regression coefficient',
     fill = NULL,
     color = NULL,
-    tag = "c"
+    tag = "C"
   ) +
   guides(fill_ramp = 'none') +
   guides(fill = "none", color='none')
@@ -105,6 +105,11 @@ boxplot_beast <- beast_data_2by2 %>%
     width = 0.8,
     size = .8
   ) +
+  # stat_dots(
+  #   side = "right",         
+  #   dotsize = 0.5,
+  #   alpha = 0.35
+  # ) +
   geom_half_point(
     alpha = .35,
     width = 0.8,
@@ -135,11 +140,10 @@ boxplot_beast <- beast_data_2by2 %>%
    position = position_nudge(x = .3),
     #geom = "point",
     shape = 24,
-    size = 1.2,
-    #stroke = 2,
+    size = .8,
+    stroke = 1.5,
     color = "red",
     fill = 'white',
-    linewidth = 1.5
   ) +
   # scale_x_discrete(labels=c(expression(paste(S[Low] , O[Low])),
   #                           (expression(paste(S[Low] , O[High]))),
@@ -155,7 +159,7 @@ boxplot_beast <- beast_data_2by2 %>%
     x = 'Confidence (Self:Other)',
     y =  bquote("Mean adjustment " ~ "(" * bar(S) * ")"),
     
-    tag = "a"
+    tag = "A"
   ) +
   
   scale_fill_manual(values = c("#bd5249",
@@ -167,10 +171,9 @@ boxplot_beast <- beast_data_2by2 %>%
     "#2c90bd",
     "#d8a15a")) +
   theme(legend.position = "none") +
-   coord_flip()
+  coord_flip()
 
 boxplot_beast
-
 
 ####### Experiment 2 boxplots -----
 
@@ -205,11 +208,10 @@ boxplot_elections <- elections_data_2by2 %>%
     position = position_nudge(x = .3),
     #geom = "point",
     shape = 24,
-    size = 1.2,
-    #stroke = 2,
+    size = .8,
+    stroke = 1.5,
     color = "red",
-    fill = 'white',
-    linewidth = 1.5
+    fill = 'white'
   ) +
   stat_summary(
     fun = mean,
@@ -224,7 +226,7 @@ boxplot_elections <- elections_data_2by2 %>%
     title = 'Experiment 2',
     x = '',
     y = bquote("Mean adjustment " ~ "(" * bar(S) * ")"),
-    tag = "b"
+    tag = "B"
   ) +
   scale_fill_manual(values = c("#bd5249",
     "#b387c0",
@@ -310,7 +312,20 @@ ggsave(
   bg = 'white'
 )
 
-# plot.new()
+
+ggsave(
+  "plots/figure2.pdf",
+  plot = fig2,
+  width = 12,
+  height = 11,
+  dpi = 300,
+  # device = "png",
+  units = c("in"),
+  #limitsize = TRUE,
+  bg = 'white'
+)
+
+  # plot.new()
 # png(filename = "plots/figure2.png", width = 10.2, height = 8.8, units = "in",
 #     pointsize = 12, bg = "white", res = 144, family = "",
 #     type = "cairo", antialias = "d")   

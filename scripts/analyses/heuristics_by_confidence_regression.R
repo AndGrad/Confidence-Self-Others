@@ -63,7 +63,8 @@ heuristics_condition_beast_random <-
     data = data_beast,
     cores = 4,
     chains = 4,
-    iter = 3000
+    iter = 3000,
+    seed = 256438026
   )
 
 save(list = c("heuristics_condition_beast_random"), 
@@ -115,7 +116,7 @@ hypMat_beast<-rbind(hypMat_beast, hypothesis(heuristics_condition_beast_random, 
 hypMat_beast<-rbind(hypMat_beast, hypothesis(heuristics_condition_beast_random, "muCompromise_interaction_fHL < 0 ")$hypothesis[1:8])
 hypMat_beast<-rbind(hypMat_beast, hypothesis(heuristics_condition_beast_random, "muCompromise_interaction_fHH > 0 ")$hypothesis[1:8])
 hypMat_beast<-rbind(hypMat_beast, hypothesis(heuristics_condition_beast_random, "muCopy_interaction_fLH > 0 ")$hypothesis[1:8])
-hypMat_beast<-rbind(hypMat_beast, hypothesis(heuristics_condition_beast_random, "muCopy_interaction_fHL > 0 ")$hypothesis[1:8])
+hypMat_beast<-rbind(hypMat_beast, hypothesis(heuristics_condition_beast_random, "muCopy_interaction_fHL < 0 ")$hypothesis[1:8])
 hypMat_beast<-rbind(hypMat_beast, hypothesis(heuristics_condition_beast_random, "muCopy_interaction_fHH > 0 ")$hypothesis[1:8])
 
 hypMat_beast_clean <- hypMat_beast %>% 
@@ -158,7 +159,8 @@ if (file.exists('model_fits/experiment2/heuristics_condition_elections_random.RD
       data = data_elections,
       cores = 4,
       chains = 4,
-      iter = 3000
+      iter = 3000,
+      seed = 1733487460
     )
   # 
   #   conditional_effects(heuristics_condition_elections_random, categorical = TRUE)

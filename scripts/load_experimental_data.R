@@ -20,9 +20,8 @@ package.check <- lapply(
 )
 
 # This imports the cleaned experimental data, prior to any data wrangling. 
+
 # read study one data (BEAST)
-beast_data <- read.csv('data/beast/clean_data/clean_data.csv') ## @andrea change filename to something unique!!
-
+beast_data <- read.csv('data/beast/clean_data/clean_data.csv') 
 # read study two data (Elections)
-elections_data <- read.csv('data/elections/clean_data/clean_data.csv') ## @andrea change filename to something unique!!
-
+elections_data <- read.csv('data/elections/clean_data/clean_data.csv') 

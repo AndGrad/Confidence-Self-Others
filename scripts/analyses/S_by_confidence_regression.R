@@ -99,7 +99,7 @@ save(df_interaction_effect_beast, file = "model_fits/experiment1/interaction_eff
 
 beast_regression_analysis_table <- bayestestR::describe_posterior(model_interaction_beast ) %>% 
   dplyr::select( -c("CI","ROPE_CI", "ROPE_Percentage", "ROPE_high", "ROPE_low"))
-  ))
+  
 
 beast_regression_analysis_table$Parameter <- c(
   "Intercept",
@@ -311,5 +311,13 @@ posterior_data_combined <- posterior_data_combined %>%
 save(posterior_data_combined, file = 'model_fits/posterior_distributions_2025.rda')
 
 
+## additional comparisons
 
+# experiment 1
+hypothesis(model_interaction_beast, "confidence_otherHigh > 0")  
+hypothesis(model_interaction_beast, "confidence_otherHigh + confidence_selfHigh:confidence_otherHigh > 0")  
+
+# experiment 2
+hypothesis(model_interaction_elections, "confidence_otherHigh > 0")
+hypothesis(model_interaction_elections, "confidence_otherHigh + confidence_selfHigh:confidence_otherHigh > 0")
 

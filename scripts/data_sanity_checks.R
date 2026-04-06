@@ -54,20 +54,11 @@ elections_data_2by2 %>%
 
 source("scripts/load_experimental_data.R")
 
-beast_filterS<- beast_data %>%
-  dplyr::filter(!is.infinite(s)) %>% 
-  dplyr::filter(s <= 1 & s >= 0) %>% 
-  nrow()
+beast_excluded <- beast_data %>%
+  dplyr::filter(is.infinite(s) | s > 1 | s < 0)
 
-excluded <- nrow(beast_data) - beast_filterS
-excluded/nrow(beast_data) 
+excluded_elections <- elections_data %>%
+  dplyr::filter(is.infinite(s) | s > 1 | s < 0)
 
-
-election_filterS<- elections_data %>%
-  dplyr::filter(!is.infinite(s)) %>% 
-  dplyr::filter(s <= 1 & s >= 0) %>% 
-  nrow()
-
-excluded_elections<- nrow(elections_data) - election_filterS
-excluded_elections/nrow(elections_data) 
-
+perc_excl_beast <- nrow(beast_excluded)/ nrow(beast_data) 
+perc_excl_elections <- nrow(excluded_elections)/nrow(elections_data) 
