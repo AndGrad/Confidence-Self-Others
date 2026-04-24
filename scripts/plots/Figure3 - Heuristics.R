@@ -23,7 +23,8 @@ palette <- c("#FFFFFF", "#bae4b3", "#74c476", "#238b45", "#000000")
 ## Experiment 1
 heuristic_plot_beast <-
   ggplot(data = heuristics_beast_data, aes(x = interaction_f, y = freq)) +
-  geom_col(position = position_stack(reverse = TRUE) ,
+  geom_col(linewidth = 0.6,
+           position = position_stack(reverse = TRUE) ,
            aes(fill = factor(bin)),
            color = 'black')    +
   geom_label(
@@ -31,7 +32,7 @@ heuristic_plot_beast <-
     fontface = "bold",
     fill = 'white',
     position = position_stack(vjust = .5),
-    size = 8,
+    size = 3.5,
   ) +
   labs(title = 'Experiment 1',
        x = "Confidence (Self:Other)",
@@ -53,7 +54,8 @@ heuristic_plot_beast
 ## Experiment 2
 heuristic_plot_elections <-
   ggplot(data = heuristics_elections_data, aes(x = interaction_f, y = freq)) +
-  geom_col(position = position_stack(reverse = TRUE) ,
+  geom_col(linewidth = 0.6,
+           position = position_stack(reverse = TRUE) ,
            aes(fill = factor(bin)),
            color = 'black')    +
   geom_label(
@@ -61,7 +63,7 @@ heuristic_plot_elections <-
     fontface = "bold",
     fill = 'white',
     position = position_stack(vjust = .5),
-    size = 8,
+    size = 3.5,
   ) +
   labs(title = 'Experiment 2',
        x = "Confidence (Self:Other)",
@@ -88,31 +90,49 @@ fig3 <-
   theme(
     legend.position = "bottom",
     panel.grid.major.x = NULL,
-    legend.margin = margin(5, 5, 5, ),
-    legend.spacing.x = unit(4, "pt"),
+    legend.margin = margin(5, 5, 5, 5 ),
     legend.spacing.y = unit(4, "pt"),
     legend.box = NULL
     
   )
 
-## merge guides
-fig3 <- fig3 + plot_layout(guides = "collect")
-# plot_annotation(tag_levels = 'A') &
-# theme(plot.tag = element_text(face = 'bold'))
-fig3
+text_scale <- 1.0  
+base_size  <- 14
 
+## merge guides
+
+fig3_scaled <- fig3 &
+  theme( 
+    text         = element_text(size = base_size * text_scale),
+    axis.text    = element_text(size = base_size * text_scale),
+    axis.text.y = element_text(size = base_size * text_scale, angle = 40),
+    axis.title   = element_text(size = base_size * text_scale),
+    plot.title   = element_text(size = base_size * text_scale * 1.2, hjust = 0.5),
+    legend.text  = element_text(size = 10 * text_scale,
+                                margin = margin(l = 2, unit = "pt")),
+    legend.title = element_text(size = 12 * text_scale, face = "bold", hjust = 0.5),
+    legend.key.spacing.x = unit(6, "pt"), 
+    legend.spacing.y = unit(0, "pt"),   
+    strip.text   = element_text(size = base_size * text_scale),
+    axis.ticks = element_line(linewidth = 0.6)
+    
+  ) 
+
+
+fig3_scaled + plot_layout(guides = "collect")
 ## test figure
-ggsave(
-  'plots/figure3.png',
-  width = 10,
-  height = 5.8,
-  dpi = 180
-)
+# ggsave(
+#   'plots/figure3.png',
+#   width = 10,
+#   height = 5.8,
+#   dpi = 180
+# )
 
 ggsave(
   'plots/figure3.pdf',
-  width = 16,
-  height = 8,
+  width = 8,
+  scale = 1.1,
+  height = 5,
   dpi = 300
 )
   

@@ -24,6 +24,11 @@ load('model_fits/experiment2/interaction_effect_elections.rda')
 # load theme for plots
 source('scripts/plots/theme_plot.R')
 
+
+text_scale <- 1.0  
+base_size  <- 12
+
+
 ##### Figure 1 -----------------------------------------------------------------
 
 ## plot posterior distribution of estimated coefficients
@@ -76,7 +81,18 @@ plot_br <-
     tag = "C"
   ) +
   guides(fill_ramp = 'none') +
-  guides(fill = "none", color='none')
+  guides(fill = "none", color='none') +
+  theme( 
+    text         = element_text(size = base_size * text_scale),
+    axis.text    = element_text(size = base_size * text_scale),
+    axis.text.y = element_text(size = base_size * text_scale, angle = 40),
+    axis.title   = element_text(size = base_size * text_scale),
+    plot.title   = element_text(size = base_size * text_scale * 1.2, hjust = 0.5),
+    strip.text   = element_text(size = base_size * text_scale),
+    axis.ticks = element_line(linewidth = 0.6)
+    
+  ) 
+
 
 
 plot_br
@@ -99,6 +115,7 @@ boxplot_beast <- beast_data_2by2 %>%
     fill = interaction_f
   )) +
   geom_half_boxplot(
+    linewidth = 0.6,
     nudge = 0,
     errorbar.draw = FALSE,
     outlier.shape = NA,
@@ -171,7 +188,19 @@ boxplot_beast <- beast_data_2by2 %>%
     "#2c90bd",
     "#d8a15a")) +
   theme(legend.position = "none") +
-  coord_flip()
+  coord_flip() +
+  theme( 
+    text         = element_text(size = base_size * text_scale),
+    axis.text    = element_text(size = base_size * text_scale),
+    axis.text.y = element_text(size = base_size * text_scale, angle = 40),
+    axis.title   = element_text(size = base_size * text_scale),
+    plot.title   = element_text(size = base_size * text_scale * 1.2, hjust = 0.5),
+    strip.text   = element_text(size = base_size * text_scale),
+    axis.ticks = element_line(linewidth = 0.6)
+    
+  ) 
+
+  
 
 boxplot_beast
 
@@ -184,6 +213,7 @@ boxplot_elections <- elections_data_2by2 %>%
     fill = interaction_f
   )) +
   geom_half_boxplot(
+    linewidth = 0.6,
     nudge = 0,
     errorbar.draw = FALSE,
     outlier.shape = NA,
@@ -255,9 +285,17 @@ boxplot_elections <- elections_data_2by2 %>%
   #strip.background = element_blank(),
   axis.text.y = element_blank(),
   axis.ticks.y = element_blank())+
-  coord_flip()
+  coord_flip() +
+  theme( 
+    text         = element_text(size = base_size * text_scale),
+    axis.text    = element_text(size = base_size * text_scale),
+    axis.text.y = element_text(size = base_size * text_scale, angle = 40),
+    axis.title   = element_text(size = base_size * text_scale),
+    plot.title   = element_text(size = base_size * text_scale * 1.2, hjust = 0.5),
+    strip.text   = element_text(size = base_size * text_scale),
+    axis.ticks = element_line(linewidth = 0.6)
+  ) 
 
-boxplot_elections
 
 ## merge plots together in one
 raw_data <-
@@ -266,7 +304,7 @@ raw_data <-
     boxplot_elections,
     align = "H",
     nrow = 1,
-    rel_widths = c(1, .78)
+    rel_widths = c(1, .95)
   )
 
 raw_data
@@ -281,7 +319,17 @@ fig2 <-
   rel_heights = c(1, .8)
 )
 
-fig2
+
+
+fig2 <- fig2 +
+  theme( 
+    text         = element_text(size = base_size * text_scale),
+    axis.text    = element_text(size = base_size * text_scale),
+    axis.text.y = element_text(size = base_size * text_scale, angle = 40),
+    axis.title   = element_text(size = base_size * text_scale),
+    plot.title   = element_text(size = base_size * text_scale * 1.2, hjust = 0.5),
+    strip.text   = element_text(size = base_size * text_scale)
+  ) 
 
 # ## preview the plots
 # 
@@ -316,12 +364,11 @@ ggsave(
 ggsave(
   "plots/figure2.pdf",
   plot = fig2,
-  width = 12,
-  height = 11,
-  dpi = 300,
+  width = 8,
+  height = 7,
+  #dpi = 300,
   # device = "png",
   units = c("in"),
-  #limitsize = TRUE,
   bg = 'white'
 )
 
