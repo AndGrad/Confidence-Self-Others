@@ -130,8 +130,8 @@ fig3_scaled + plot_layout(guides = "collect")
 
 ggsave(
   'plots/figure3.pdf',
-  width = 8,
-  scale = 1.1,
+  width = 8.2,
+  scale = 1,
   height = 5,
   dpi = 300
 )
